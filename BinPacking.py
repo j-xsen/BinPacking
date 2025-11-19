@@ -2,6 +2,7 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.showbase.ShowBase import ShowBase
 
 from Container import Container
+from ContainerHolder import ContainerHolder
 from Item import Item
 from ItemHolder import ItemHolder
 
@@ -23,6 +24,7 @@ loadPrcFileData("", "notify-level-ShowBase warning")
 class BinPacking(ShowBase):
     def __init__(self):
         super().__init__()
+        base.disableMouse()
 
         self.notify = directNotify.newCategory("BinPacking")
 
@@ -33,13 +35,16 @@ class BinPacking(ShowBase):
         self._item_selected = None
 
         container_one = Container(side_length=4)
-        container_one.reparent_to(render)
-        container_one.set_pos(0,80,0)
+
+        self.container_holder = ContainerHolder()
+        self.container_holder.addition(container_one)
+        self.container_holder.set_pos(0,80,0)
+        self.container_holder.reparent_to(render)
 
         item_one = Item(side_length=1, weight=1)
 
         self.item_holder = ItemHolder()
-        self.item_holder.add_item(item_one)
+        self.item_holder.addition(item_one)
         self.item_holder.set_pos(0,80,-10)
         self.item_holder.reparent_to(render)
 
@@ -55,7 +60,7 @@ class BinPacking(ShowBase):
         return self._item_selected
     @item_selected.setter
     def item_selected(self, value):
-        value = self.item_holder.get_item(value)
+        value = self.item_holder.get(value)
 
         if not value:
             self.notify.warning("No item selected")
@@ -103,6 +108,18 @@ class BinPacking(ShowBase):
             picked_item = picked_obj.find_net_tag("item")
             if not picked_item.is_empty():
                 self.item_selected = picked_item
+            else:
+                picked_item = picked_obj.find_net_tag("container")
+                if not picked_item.is_empty() and self.item_selected:
+                    container = self.container_holder.get(picked_item)
+                    if container:
+                        self.notify.debug(f"Placing Item {self.item_selected.get_name()} into Container {picked_item.get_name()}")
+                        container.add_item(self.item_selected)
+                        self.item_holder.subtraction(self.item_selected)
+                        self.item_selected.deselect()
+                        self._item_selected = None
+                    else:
+                        self.notify.warning(f"Container {picked_item} not found in ContainerHolder")
         picker_np.remove_node()
         return None
 

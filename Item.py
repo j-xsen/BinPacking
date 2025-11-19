@@ -31,7 +31,7 @@ class Item(Cube):
         self._selected = False
 
         self.weight = weight
-        self.weight_text = OnscreenText(text=f"Weight: {side_length ** 3}", pos=(0, side_length+2), scale=1.25, fg=(1, 1, 1, 1))
+        self.weight_text = OnscreenText(text=f"Volume: {side_length ** 3}", pos=(0, side_length+2), scale=1.25, fg=(1, 1, 1, 1))
         self.weight_text.set_billboard_axis()
         self.weight_text.reparent_to(self)
 

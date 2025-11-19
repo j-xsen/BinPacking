@@ -1,32 +1,17 @@
-from direct.directnotify.DirectNotifyGlobal import directNotify
-from panda3d.core import NodePath, CollisionNode, CollisionRay, GeomNode
-
+from Holder import Holder
 from Item import Item
 
 
-class ItemHolder(NodePath):
+class ItemHolder(Holder):
     def __init__(self):
-        super().__init__('item_holder')
-        self.notify = directNotify.newCategory("ItemHolder")
-        self.items = []
+        super().__init__('ItemHolder')
 
-    def get_item(self, id):
-        if type(id) == NodePath:
-            id = id.get_name()
-        for item in self.items:
-            if item.get_name()== id:
-                return item
-        self.notify.warning("Item not found")
-        return None
-
-    def add_item(self, item):
-        if type(item) != Item:
+    def addition(self, add):
+        if type(add) != Item:
             self.notify.warning("Only Item instances can be added to ItemHolder")
             return
-        item.reparent_to(self)
-        self.items.append(item)
-        self.notify.debug(f"Item {item.get_name()} added to ItemHolder")
+        self.notify.debug(f"Adding Item {add.get_name()} to ItemHolder")
 
-    def remove_item(self, item):
-        if item in self.items:
-            self.items.remove(item)
+        add.reparent_to(self)
+        self.collection.append(add)
+        self.notify.debug(f"Item {add.get_name()} added to ItemHolder")
