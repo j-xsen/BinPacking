@@ -1,3 +1,5 @@
+import random
+
 from direct.task.TaskManagerGlobal import taskMgr
 from panda3d.core import NodePath, LVecBase4f
 
@@ -6,6 +8,7 @@ from Geom.Square import Square
 
 class Cube(NodePath):
     def __init__(self, side_length):
+        self.uid = random.randint(1000, 9999)
         super().__init__('cube')
 
         # Create six faces
@@ -45,14 +48,15 @@ class Cube(NodePath):
             face.reparent_to(self)
 
         # spin
-        taskMgr.add(self.move, "move")
+        taskMgr.add(self.move, f"move-{self.uid}")
 
     def delete(self):
         taskMgr.remove("move")
         self.remove_node()
 
     def move(self, task):
-        self.set_h(self.get_h() + 1)
+        if not self.is_empty():
+            self.set_h(self.get_h() + .6)
         return task.cont
 
     def volume(self):

@@ -2,6 +2,16 @@ from direct.directnotify.DirectNotifyGlobal import directNotify
 from panda3d.core import NodePath
 
 
+positions = [
+    [[0, 0, 0]],  # 1 item
+    [[-6.0, 0, 0], [6.0, 0, 0]],  # 2 items
+    [[-12.0, 0, 0], [0.0, 0, 0], [12.0, 0, 0]],  # 3 items
+    [[-12.0, 0, 0], [-4.0, 0, 0], [4.0, 0, 0], [12.0, 0, 0]]  # 4 items
+]
+
+
+
+
 class Holder(NodePath):
     def __init__(self, notify_tag="Holder"):
         super().__init__(notify_tag.lower())
@@ -17,7 +27,9 @@ class Holder(NodePath):
 
     def addition(self, add):
         add.reparent_to(self)
-        self.items.append(add)
+        self.collection.append(add)
+        if len(self.collection) > len(positions):
+            add.hide()
         self.notify.debug(f"Addition {add.get_name()} added to Holder")
 
     def subtraction(self, sub):

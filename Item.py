@@ -8,13 +8,13 @@ from Geom.Square import Square
 
 
 class Item(Cube):
-    def __init__(self, side_length, weight):
+    def __init__(self, side_length, weight=None):
         super().__init__(side_length)
 
         min_bound, max_bound = self.get_tight_bounds()
 
         self.notify = directNotify.newCategory("Item")
-        self.set_name(f"I-{random.randint(1000, 9999)}")
+        self.set_name(f"I-{self.uid}")
 
         # color green
         for face in self.faces:
@@ -30,7 +30,10 @@ class Item(Cube):
         self.select_square = square
         self._selected = False
 
-        self.weight = weight
+        if weight:
+            self.weight = weight
+        else:
+            self.weight = side_length**3
         self.weight_text = OnscreenText(text=f"Volume: {side_length ** 3}", pos=(0, side_length+2), scale=1.25, fg=(1, 1, 1, 1))
         self.weight_text.set_billboard_axis()
         self.weight_text.reparent_to(self)

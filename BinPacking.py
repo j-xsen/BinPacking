@@ -41,7 +41,7 @@ class BinPacking(ShowBase):
         self.container_holder.set_pos(0,80,0)
         self.container_holder.reparent_to(render)
 
-        item_one = Item(side_length=1, weight=1)
+        item_one = Item(side_length=1)
 
         self.item_holder = ItemHolder()
         self.item_holder.addition(item_one)
