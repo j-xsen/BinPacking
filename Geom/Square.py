@@ -1,11 +1,21 @@
+import random
+
 from panda3d.core import GeomVertexFormat, GeomVertexData, Geom, GeomVertexWriter, LVecBase3f, LVecBase4f, GeomNode, \
     NodePath, GeomTriangles
 
 
 class Square(NodePath):
-    def __init__(self, side_length):
+    def __init__(self, side_length, width_length=None, height_length=None):
+        self.uid = random.randint(1000, 9999)
         NodePath.__init__(self, "Square")
         self.side_length = side_length
+
+        # 2d
+        if width_length:
+            self.width_length = width_length
+            # 3d
+            if height_length:
+                self.height_length = height_length
 
         v_format = GeomVertexFormat.get_v3c4()
 

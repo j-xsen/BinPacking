@@ -1,16 +1,25 @@
+import random
+
+from direct.gui.DirectButton import DirectButton
+from direct.showbase.DirectObject import DirectObject
+
 from Container import Container
 from Holder import Holder
 
 
-class ContainerHolder(Holder):
+class ContainerHolder(Holder, DirectObject):
     def __init__(self):
-        super().__init__('ContainerHolder')
+        super().__init__(Container, (0, 0, 0.7), 1, 'ContainerHolder')
 
-    def addition(self, add):
-        if type(add) != Container:
-            self.notify.warning("Only Container instances can be added to ContainerHolder")
-            return
-        self.notify.debug(f"Adding Container {add.get_name()} to ContainerHolder")
-        add.reparent_to(self)
-        self.collection.append(add)
-        self.notify.debug(f"Container {add.get_name()} added to ContainerHolder")
+        self.create_new_container_button = DirectButton(
+            text="Create New Container",
+            scale=0.07,
+            pos=(0, 0, 0.88),
+            command=self.create_new_container
+        )
+
+        self.accept("container-clicked", self.on_item_clicked)
+
+    def create_new_container(self):
+        new_container = Container()
+        self.addition(new_container)

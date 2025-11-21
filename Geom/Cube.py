@@ -7,7 +7,7 @@ from Geom.Square import Square
 
 
 class Cube(NodePath):
-    def __init__(self, side_length):
+    def __init__(self, side_length, width_length=None, height_length=None):
         self.uid = random.randint(1000, 9999)
         super().__init__('cube')
 
@@ -48,7 +48,7 @@ class Cube(NodePath):
             face.reparent_to(self)
 
         # spin
-        taskMgr.add(self.move, f"move-{self.uid}")
+        # taskMgr.add(self.move, f"move-{self.uid}")
 
     def delete(self):
         taskMgr.remove("move")

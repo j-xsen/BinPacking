@@ -1,14 +1,10 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.showbase.ShowBase import ShowBase
 
-from Container import Container
-from ContainerHolder import ContainerHolder
-from Item import Item
-from ItemHolder import ItemHolder
-
-
 from panda3d.core import loadPrcFileData, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, \
     CollisionNode
+
+from Views.OneD import OneD
 
 # loadPrcFileData("", "want-directtools #t")
 # loadPrcFileData("", "want-tk #t")
@@ -31,59 +27,22 @@ class BinPacking(ShowBase):
         # window set up
         self.title = "Bin Packing Visualization"
         self.set_background_color(0, 0, 0.2, 1)
-
-        self._item_selected = None
-
-        container_one = Container(side_length=4)
-
-        self.container_holder = ContainerHolder()
-        self.container_holder.addition(container_one)
-        self.container_holder.set_pos(0,80,0)
-        self.container_holder.reparent_to(render)
-
-        item_one = Item(side_length=1)
-
-        self.item_holder = ItemHolder()
-        self.item_holder.addition(item_one)
-        self.item_holder.set_pos(0,80,-10)
-        self.item_holder.reparent_to(render)
-
         self.accept("mouse1", self.on_mouse_click)
+
+        self.item_selected = None
+
+        one_dimension = OneD()
+        one_dimension.reparent_to(render)
+
+        self.dimension = one_dimension
+        self.item_holder = one_dimension.item_holder
+        self.container_holder = one_dimension.container_holder
+
+        # base.cam.node().lookAt(one_dimension)
+        camera.look_at(one_dimension)
 
         # exit
         self.accept("escape", self.userExit)
-
-    @property
-    def item_selected(self):
-        if self._item_selected is None:
-            return None
-        return self._item_selected
-    @item_selected.setter
-    def item_selected(self, value):
-        value = self.item_holder.get(value)
-
-        if not value:
-            self.notify.warning("No item selected")
-            return
-
-        # no item selected, fill
-        if not self._item_selected:
-            if value is None:
-                self.notify.warning(f"Selected item {value} not found in ItemHolder")
-                return
-            value.select()
-            self._item_selected = value
-        # item selected, toggle
-        else:
-            # deselect if same item
-            if value == self._item_selected:
-                value.deselect()
-                self._item_selected = None
-            # select if new item
-            else:
-                self._item_selected.deselect()
-                value.select()
-                self._item_selected = value
 
     def on_mouse_click(self):
         if not base.mouseWatcherNode.has_mouse():
@@ -108,6 +67,7 @@ class BinPacking(ShowBase):
             picked_item = picked_obj.find_net_tag("item")
             if not picked_item.is_empty():
                 self.item_selected = picked_item
+                self.notify.debug(f"Item {picked_item.get_name()} clicked")
             else:
                 picked_item = picked_obj.find_net_tag("container")
                 if not picked_item.is_empty() and self.item_selected:
@@ -117,7 +77,7 @@ class BinPacking(ShowBase):
                         container.add_item(self.item_selected)
                         self.item_holder.subtraction(self.item_selected)
                         self.item_selected.deselect()
-                        self._item_selected = None
+                        self.item_selected = None
                     else:
                         self.notify.warning(f"Container {picked_item} not found in ContainerHolder")
         picker_np.remove_node()
