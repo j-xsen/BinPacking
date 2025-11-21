@@ -36,6 +36,12 @@ class Holder(IDNodePath):
         self.item_type = item_type
         self.collection = []
 
+    def reset(self):
+        self.deselect()
+        for item in self.collection:
+            item.destroy()
+        self.collection = []
+
     def deselect(self):
         if self.selected:
             self.selected.deselect()

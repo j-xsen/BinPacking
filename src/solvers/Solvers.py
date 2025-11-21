@@ -1,6 +1,7 @@
 from direct.gui.DirectButton import DirectButton
 from direct.gui.DirectFrame import DirectFrame
 
+from src.solvers.BestFit import BestFit
 from src.solvers.GreedyValue import GreedyValue
 from src.solvers.GreedyWeight import GreedyWeight
 
@@ -32,4 +33,14 @@ class Solvers:
             scale=0.05,
             pos=(0.4, 0, 0),
             command=greedy_value.solve
+        )
+        self.greedy_value.hide()
+
+        best_fit = BestFit(item_holder, container_holder, problem)
+        self.best_fit = DirectButton(
+            parent=self.frame,
+            text="Best Fit Solver",
+            scale=0.05,
+            pos=(0.4, 0, 0),
+            command=best_fit.solve
         )

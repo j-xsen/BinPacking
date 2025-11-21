@@ -43,6 +43,11 @@ class Item(IDNodePath):
     def deselect(self):
         self.frame["frameColor"] = unselect_colors
 
+    def destroy(self):
+        self.frame.destroy()
+        self.uid_text.destroy()
+        super().destroy()
+
     @property
     def weight(self):
         return self._weight
@@ -50,3 +55,6 @@ class Item(IDNodePath):
     def weight(self, value):
         self.frame.setText(f"{value}")
         self._weight = value
+
+    def __str__(self):
+        return f"Item-{self.uid} (Weight: {self.weight})"

@@ -76,6 +76,15 @@ class Container(Holder):
             text_fg=(1, 1, 1, 1),
             )
 
+    def destroy(self):
+        for child in self.frame.getChildren():
+            child.remove_node()
+        self.frame.remove_node()
+        self.remove_node()
+
+    def get_remainder(self):
+        return int(self.capacity)-int(self.carrying)
+
     def can_add(self, item):
         return (int(self.carrying) + int(item.weight)) <= self.capacity
 
