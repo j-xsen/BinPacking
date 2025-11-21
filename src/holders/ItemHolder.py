@@ -19,8 +19,8 @@ class ItemHolder(Holder, DirectObject):
 
         self.accept("item-clicked", self.on_item_clicked)
 
-    def create_new_item(self):
-        new_item = Item(value=1)
+    def create_new_item(self, value=1):
+        new_item = Item(value=value)
         self.addition(new_item)
         self.notify.debug(f"New Item created: {new_item}")
         self.notify.debug(f"Current Items: {self.collection}")

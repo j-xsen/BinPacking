@@ -27,19 +27,14 @@ class BinPacking(ShowBase):
         # window set up
         self.title = "Bin Packing Visualization"
         self.set_background_color(0, 0, 0.2, 1)
-        self.accept("mouse1", self.on_mouse_click)
+        # self.accept("mouse1", self.on_mouse_click)
 
         self.item_selected = None
 
+        # dimension
         one_dimension = OneD()
         one_dimension.reparent_to(render)
-
         self.dimension = one_dimension
-        self.item_holder = one_dimension.item_holder
-        self.container_holder = one_dimension.container_holder
-
-        # base.cam.node().lookAt(one_dimension)
-        camera.look_at(one_dimension)
 
         self.accept("holder-updated", self.on_holder_update)
 
@@ -47,17 +42,17 @@ class BinPacking(ShowBase):
         self.accept("escape", self.userExit)
 
     def on_holder_update(self):
-        if self.item_holder.selected and self.container_holder.selected:
+        if self.dimension.item_holder.selected and self.dimension.container_holder.selected:
             # check if valid
-            if self.container_holder.selected.can_add(self.item_holder.selected):
-                self.notify.debug(f"Moving Item {self.item_holder.selected.get_name()} to Container"
-                                  f" {self.container_holder.selected.get_name()}")
-                self.container_holder.selected.addition(self.item_holder.selected)
-                self.item_holder.subtraction(self.item_holder.selected)
+            if self.dimension.container_holder.selected.can_add(self.dimension.item_holder.selected):
+                self.notify.debug(f"Moving Item {self.dimension.item_holder.selected.get_name()} to Container"
+                                  f" {self.dimension.container_holder.selected.get_name()}")
+                self.dimension.container_holder.selected.addition(self.dimension.item_holder.selected)
+                self.dimension.item_holder.subtraction(self.dimension.item_holder.selected)
                 messenger.send("holder-updated")
             else:
-                self.container_holder.selected.deselect()
-                self.container_holder.rearrange()
+                self.dimension.container_holder.selected.deselect()
+                self.dimension.container_holder.rearrange()
 
     def on_mouse_click(self):
         if not base.mouseWatcherNode.has_mouse():
@@ -86,11 +81,11 @@ class BinPacking(ShowBase):
             else:
                 picked_item = picked_obj.find_net_tag("container")
                 if not picked_item.is_empty() and self.item_selected:
-                    container = self.container_holder.get(picked_item)
+                    container = self.dimension.container_holder.get(picked_item)
                     if container:
                         self.notify.debug(f"Placing Item {self.item_selected.get_name()} into Container {picked_item.get_name()}")
                         container.add_item(self.item_selected)
-                        self.item_holder.subtraction(self.item_selected)
+                        self.dimension.item_holder.subtraction(self.item_selected)
                         self.item_selected.deselect()
                         self.item_selected = None
                     else:

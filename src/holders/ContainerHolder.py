@@ -9,6 +9,8 @@ class ContainerHolder(Holder, DirectObject):
     def __init__(self):
         super().__init__(Container, (0, 0, 0.7), 1, 'ContainerHolder')
 
+        self.capacity=5
+
         self.create_new_container_button = DirectButton(
             text="Create New Container",
             scale=0.07,
@@ -18,6 +20,9 @@ class ContainerHolder(Holder, DirectObject):
 
         self.accept("container-clicked", self.on_item_clicked)
 
+    def set_capacity(self, cap):
+        self.capacity = cap
+
     def create_new_container(self):
-        new_container = Container(capacity=5)
+        new_container = Container(capacity=self.capacity)
         self.addition(new_container)
