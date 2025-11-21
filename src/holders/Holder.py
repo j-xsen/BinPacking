@@ -11,8 +11,13 @@ positions = [
 
     [[-1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [1.0, 0.0, 0.0]],  # 3 items
 
-    [[-1.0, 0.0, 0.0], [-0.3333, 0.0, 0.0], [0.3333, 0.0, 0.0], [1.0, 0.0, 0.0]]  # 4 items
+    [[-1.0, 0.0, 0.0], [-0.3333, 0.0, 0.0], [0.3333, 0.0, 0.0], [1.0, 0.0, 0.0]],  # 4 items
+
+    [[-1.0, 0.0, 0.0], [-0.5, 0.0, 0.0], [0.0, 0.0, 0.0], [0.5, 0.0, 0.0], [1.0, 0.0, 0.0]],  # 5 items
+
+    [[-1.0, 0.0, 0.0], [-0.6, 0.0, 0.0], [-0.2, 0.0, 0.0], [0.2, 0.0, 0.0], [0.6, 0.0, 0.0], [1.0, 0.0, 0.0]]  # 6 items
 ]
+
 
 class Holder(IDNodePath):
     def __init__(self, item_type, pos, width, notify_tag="Holder", color=(1, 1, 1, 0.2)):
@@ -31,18 +36,20 @@ class Holder(IDNodePath):
         self.item_type = item_type
         self.collection = []
 
+    def deselect(self):
+        if self.selected:
+            self.selected.deselect()
+            self.selected = None
+
     def on_item_clicked(self, item):
         if not item:
-            if self.selected:
-                self.selected.deselect()
-                self.selected = None
+            self.deselect()
             return
         if not self.selected:
             item.select()
             self.selected = item
         elif self.selected == item:
-            item.deselect()
-            self.selected = None
+            self.deselect()
         else:
             self.selected.deselect()
             item.select()
@@ -81,7 +88,7 @@ class Holder(IDNodePath):
         if not add:
             self.notify.error("Cannot add None to Holder")
             return
-        if not type(add) == self.item_type:
+        if not isinstance(add, self.item_type):
             self.notify.warning(f"Only {self.item_type.__name__} instances can be added to Holder")
             return
         add.reparent_to(self.frame)

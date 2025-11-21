@@ -7,7 +7,7 @@ from src.Colors import unselect_colors, selected_colors
 
 
 class Item(IDNodePath):
-    def __init__(self, value=0):
+    def __init__(self, weight=0):
         super().__init__('Item')
 
         self.set_name(f"I-{self.uid}")
@@ -22,7 +22,7 @@ class Item(IDNodePath):
             borderWidth=(0.02, 0.02),
             frameSize=(-0.1, 0.1, -0.1, 0.1),
             pos=(0, 0, 0),
-            text=f"{value}",
+            text=f"{weight}",
             text_scale=0.07,
         )
 
@@ -35,7 +35,7 @@ class Item(IDNodePath):
             text_fg=(0, 0, 0, 0.5),
         )
 
-        self.value = value
+        self.weight = weight
 
     def select(self):
         self.frame["frameColor"] = selected_colors
@@ -44,9 +44,9 @@ class Item(IDNodePath):
         self.frame["frameColor"] = unselect_colors
 
     @property
-    def value(self):
-        return self._value
-    @value.setter
-    def value(self, value):
+    def weight(self):
+        return self._weight
+    @weight.setter
+    def weight(self, value):
         self.frame.setText(f"{value}")
-        self._value = value
+        self._weight = value

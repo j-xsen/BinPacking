@@ -18,7 +18,7 @@ class OneD(NodePath):
         self.container_holder.reparent_to(self)
 
         self.problem_loader = ProblemLoader(self.item_holder, self.container_holder)
-        self.problem_loader.load("problem1")
+        self.problem_loader.load("knapsack1")
 
         self.solvers = Solvers(self.item_holder, self.container_holder, self.problem_loader.loaded_problem)
 
