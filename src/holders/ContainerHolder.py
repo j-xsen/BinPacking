@@ -1,10 +1,8 @@
-import random
-
 from direct.gui.DirectButton import DirectButton
 from direct.showbase.DirectObject import DirectObject
 
-from Container import Container
-from Holder import Holder
+from src.holders.Container import Container
+from src.holders.Holder import Holder
 
 
 class ContainerHolder(Holder, DirectObject):

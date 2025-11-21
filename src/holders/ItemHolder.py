@@ -1,11 +1,8 @@
-import random
-
 from direct.gui.DirectButton import DirectButton
-from direct.gui.DirectFrame import DirectFrame
 from direct.showbase.DirectObject import DirectObject
 
-from Holder import Holder
-from Item import Item
+from src.holders.Holder import Holder
+from src.dimensions.oned.Item import Item
 
 
 class ItemHolder(Holder, DirectObject):

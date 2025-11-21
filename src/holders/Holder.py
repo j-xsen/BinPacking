@@ -1,10 +1,8 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectButton import DirectButton
-from direct.gui.DirectFrame import DirectFrame
 from direct.gui.DirectGuiGlobals import RIDGE
-from panda3d.core import NodePath
 
-from IDNodePath import IDNodePath
+from src.IDNodePath import IDNodePath
 
 positions = [
     [[0.0, 0.0, 0.0]],  # 1 item
@@ -66,6 +64,7 @@ class Holder(IDNodePath):
         for item in self.collection:
             if item.active:
                 if len(active_collection) < len(positions):
+                    item.show()
                     active_collection.append(item)
                 else:
                     item.hide()

@@ -4,7 +4,7 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import loadPrcFileData, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, \
     CollisionNode
 
-from Views.OneD import OneD
+from src.dimensions.oned.OneD import OneD
 
 # loadPrcFileData("", "want-directtools #t")
 # loadPrcFileData("", "want-tk #t")

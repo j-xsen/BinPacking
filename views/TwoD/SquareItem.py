@@ -3,8 +3,8 @@ import random
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.OnscreenText import OnscreenText
 
-from Geom.Cube import Cube
-from Geom.Square import Square
+from geom.Cube import Cube
+from geom.Square import Square
 
 
 class Item(Square):

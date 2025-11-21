@@ -1,12 +1,9 @@
 from direct.gui.DirectButton import DirectButton
-from direct.gui.DirectFrame import DirectFrame
 from direct.gui.DirectLabel import DirectLabel
-from direct.gui.OnscreenText import OnscreenText
-from panda3d.core import NodePath, TextNode
 from direct.gui import DirectGuiGlobals as DGG
 
-from IDNodePath import IDNodePath
-from colors import unselect_colors, selected_colors
+from src.IDNodePath import IDNodePath
+from src.Colors import unselect_colors, selected_colors
 
 
 class Item(IDNodePath):

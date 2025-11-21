@@ -1,9 +1,8 @@
 from direct.gui.DirectLabel import DirectLabel
 
-from Geom.Square import Square
-from Holder import Holder
-from Item import Item
-from colors import unselect_colors, selected_colors
+from src.holders.Holder import Holder
+from src.dimensions.oned.Item import Item
+from src.Colors import unselect_colors, selected_colors
 from direct.gui import DirectGuiGlobals as DGG
 
 

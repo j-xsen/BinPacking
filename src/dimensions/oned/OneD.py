@@ -1,7 +1,7 @@
 from panda3d.core import NodePath
 
-from ContainerHolder import ContainerHolder
-from ItemHolder import ItemHolder
+from src.holders.ContainerHolder import ContainerHolder
+from src.holders.ItemHolder import ItemHolder
 
 
 class OneD(NodePath):
