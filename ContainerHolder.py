@@ -21,5 +21,5 @@ class ContainerHolder(Holder, DirectObject):
         self.accept("container-clicked", self.on_item_clicked)
 
     def create_new_container(self):
-        new_container = Container()
+        new_container = Container(capacity=5)
         self.addition(new_container)

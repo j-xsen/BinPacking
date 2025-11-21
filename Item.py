@@ -15,6 +15,8 @@ class Item(IDNodePath):
 
         self.set_name(f"I-{self.uid}")
 
+        self.active = True
+
         self.frame = DirectButton(
             parent=self,
             command=lambda: messenger.send("item-clicked", [self]),
@@ -27,7 +29,7 @@ class Item(IDNodePath):
             text_scale=0.07,
         )
 
-        uid_text = DirectLabel(
+        self.uid_text = DirectLabel(
             parent=self.frame,
             text=f"{self.uid}",
             scale=0.05,

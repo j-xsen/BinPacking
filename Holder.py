@@ -28,22 +28,28 @@ class Holder(IDNodePath):
             frameSize=(-width, width, -0.1, 0.1),
             pos=pos,
         )
-        self.selected_item = None
+        self.selected = None
         self.z = pos[2]
         self.item_type = item_type
         self.collection = []
 
     def on_item_clicked(self, item):
-        if not self.selected_item:
+        if not item:
+            if self.selected:
+                self.selected.deselect()
+                self.selected = None
+            return
+        if not self.selected:
             item.select()
-            self.selected_item = item
-        elif self.selected_item == item:
+            self.selected = item
+        elif self.selected == item:
             item.deselect()
-            self.selected_item = None
+            self.selected = None
         else:
-            self.selected_item.deselect()
+            self.selected.deselect()
             item.select()
-            self.selected_item = item
+            self.selected = item
+        messenger.send("holder-updated")
 
     def get(self, obj):
         for item in self.collection:
@@ -56,23 +62,21 @@ class Holder(IDNodePath):
         self.frame.set_pos(x, y, self.z)
 
     def rearrange(self):
-        count = len(self.collection)
-        if count == 0:
+        active_collection = []
+        for item in self.collection:
+            if item.active:
+                if len(active_collection) < len(positions):
+                    active_collection.append(item)
+                else:
+                    item.hide()
+        if len(active_collection) == 0:
             return
 
-        pos_list = positions[min(count, len(positions)) - 1]
-
-        for i, item in enumerate(self.collection):
-            if i < len(pos_list):
-                if hasattr(item, "frame"):
-                    item.frame.show()
-                item.show()
-            else:
-                if hasattr(item, "frame"):
-                    item.frame.hide()
-                item.hide()
-                continue
-            item.set_pos(pos_list[i][0], pos_list[i][1], pos_list[i][2])
+        pos_list = positions[len(active_collection)-1]
+        for i, item in enumerate(active_collection):
+            item.set_pos(pos_list[i][0],
+                            pos_list[i][1],
+                            pos_list[i][2])
 
     def addition(self, add):
         if not type(add) == self.item_type:
@@ -84,5 +88,8 @@ class Holder(IDNodePath):
         self.rearrange()
 
     def subtraction(self, sub):
+        if self.selected and self.selected == sub:
+            self.selected.deselect()
+            self.selected = None
         if sub in self.collection:
             self.collection.remove(sub)

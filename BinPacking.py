@@ -41,8 +41,23 @@ class BinPacking(ShowBase):
         # base.cam.node().lookAt(one_dimension)
         camera.look_at(one_dimension)
 
+        self.accept("holder-updated", self.on_holder_update)
+
         # exit
         self.accept("escape", self.userExit)
+
+    def on_holder_update(self):
+        if self.item_holder.selected and self.container_holder.selected:
+            # check if valid
+            if self.container_holder.selected.can_add(self.item_holder.selected):
+                self.notify.debug(f"Moving Item {self.item_holder.selected.get_name()} to Container"
+                                  f" {self.container_holder.selected.get_name()}")
+                self.container_holder.selected.addition(self.item_holder.selected)
+                self.item_holder.subtraction(self.item_holder.selected)
+                messenger.send("holder-updated")
+            else:
+                self.container_holder.selected.deselect()
+                self.container_holder.rearrange()
 
     def on_mouse_click(self):
         if not base.mouseWatcherNode.has_mouse():
