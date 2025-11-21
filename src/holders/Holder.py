@@ -78,6 +78,9 @@ class Holder(IDNodePath):
                             pos_list[i][2])
 
     def addition(self, add):
+        if not add:
+            self.notify.error("Cannot add None to Holder")
+            return
         if not type(add) == self.item_type:
             self.notify.warning(f"Only {self.item_type.__name__} instances can be added to Holder")
             return

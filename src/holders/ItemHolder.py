@@ -24,6 +24,7 @@ class ItemHolder(Holder, DirectObject):
         self.addition(new_item)
         self.notify.debug(f"New Item created: {new_item}")
         self.notify.debug(f"Current Items: {self.collection}")
+        return new_item
 
     def subtraction(self, sub):
         super().subtraction(sub)

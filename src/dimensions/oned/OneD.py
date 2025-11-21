@@ -1,6 +1,7 @@
 from panda3d.core import NodePath
 
-from src.ProblemLoader import ProblemLoader, load_problem
+from src.ProblemLoader import ProblemLoader
+from src.solvers.Solvers import Solvers
 from src.holders.ContainerHolder import ContainerHolder
 from src.holders.ItemHolder import ItemHolder
 
@@ -18,6 +19,8 @@ class OneD(NodePath):
 
         self.problem_loader = ProblemLoader(self.item_holder, self.container_holder)
         self.problem_loader.load("problem1")
+
+        self.solvers = Solvers(self.item_holder, self.container_holder, self.problem_loader.loaded_problem)
 
     def render(self):
         return f"Rendering 1D view with data: {self.data}"

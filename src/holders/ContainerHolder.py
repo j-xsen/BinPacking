@@ -26,3 +26,4 @@ class ContainerHolder(Holder, DirectObject):
     def create_new_container(self):
         new_container = Container(capacity=self.capacity)
         self.addition(new_container)
+        return new_container

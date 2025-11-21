@@ -26,6 +26,7 @@ class ProblemLoader:
     def __init__(self, item_holder, container_holder):
         self.item_holder = item_holder
         self.container_holder = container_holder
+        self.loaded_problem = None
 
     def load(self, problem):
         # get problem
@@ -41,7 +42,6 @@ class ProblemLoader:
         # Load items
         for item_data in problem.items:
             item = self.item_holder.create_new_item(value=item_data)
-            self.item_holder.addition(item)
 
         self.container_holder.set_capacity(problem.bin_capacity)
 
@@ -49,3 +49,4 @@ class ProblemLoader:
         self.item_holder.rearrange()
         self.container_holder.rearrange()
 
+        self.loaded_problem = problem
