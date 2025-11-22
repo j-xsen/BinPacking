@@ -26,9 +26,7 @@ class Solvers:
 
         self.dimension=dimension
 
-        first_fit = FirstFit(dimension.item_holder, dimension.container_holder,
-                             dimension.problem_loader.loaded_problem,
-                             dimension.crowd_holder)
+        first_fit = FirstFit(dimension)
         self.first_fit = DirectButton(
             parent=self.frame,
             text="First Fit",
@@ -37,9 +35,7 @@ class Solvers:
             command=first_fit.solve
         )
 
-        first_fit_decreasing = FirstFitDecreasing(dimension.item_holder, dimension.container_holder,
-                             dimension.problem_loader.loaded_problem,
-                             dimension.crowd_holder)
+        first_fit_decreasing = FirstFitDecreasing(dimension)
         self.first_fit_decreasing = DirectButton(
             parent=self.frame,
             text="First Fit Decreasing",
@@ -58,9 +54,7 @@ class Solvers:
         # )
         # self.greedy_value.hide()
 
-        best_fit = BestFit(dimension.item_holder, dimension.container_holder,
-                             dimension.problem_loader.loaded_problem,
-                             dimension.crowd_holder)
+        best_fit = BestFit(dimension)
         self.best_fit = DirectButton(
             parent=self.frame,
             text="Best Fit",
@@ -69,9 +63,7 @@ class Solvers:
             command=best_fit.solve
         )
 
-        best_fit_decreasing = BestFitDecreasing(dimension.item_holder, dimension.container_holder,
-                             dimension.problem_loader.loaded_problem,
-                             dimension.crowd_holder)
+        best_fit_decreasing = BestFitDecreasing(dimension)
         self.best_fit_decreasing = DirectButton(
             parent=self.frame,
             text="Best Fit Decreasing",
@@ -80,9 +72,7 @@ class Solvers:
             command=best_fit_decreasing.solve
         )
 
-        worst_fit = WorstFit(dimension.item_holder, dimension.container_holder,
-                             dimension.problem_loader.loaded_problem,
-                             dimension.crowd_holder)
+        worst_fit = WorstFit(dimension)
         self.worst_fit = DirectButton(
             parent=self.frame,
             text="Worst Fit",
@@ -97,7 +87,7 @@ class Solvers:
             parent=self.frame,
             text="Run 10 times",
             scale=0.05,
-            pos=(0, 0, -.07),
+            pos=(0, 0, .1),
             command=self.generate_x,
             extraArgs=[10]
         )

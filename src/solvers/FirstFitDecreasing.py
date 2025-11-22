@@ -4,14 +4,13 @@ from direct.showbase.MessengerGlobal import messenger
 from src.solvers.Solver import Solver
 
 
-class FirstFitDecreasing(Notifier, Solver):
+class FirstFitDecreasing(Solver):
     """
     Sort items in decreasing order by weight,
     then place each item in the first container that can contain it
     """
-    def __init__(self, item_holder, container_holder, problem, crowd_holder):
-        super().__init__("FirstFitDecreasing")
-        Solver.__init__(self, item_holder, container_holder, problem, crowd_holder)
+    def __init__(self, dimension):
+        super().__init__(dimension,"FirstFitDecreasing")
 
     def solve(self):
         if not super().solve():

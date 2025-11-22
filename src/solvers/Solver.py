@@ -1,23 +1,26 @@
+import random
 import time
 
 import pandas as pd
 import seaborn as sns
+from direct.directnotify.Notifier import Notifier
 from matplotlib import pyplot as plt
 
 from src.holders.ContainerHolder import ContainerHolder
 from src.holders.ItemHolder import ItemHolder
 
 
-class Solver:
-    def __init__(self, item_holder, container_holder, problem, crowd_holder):
-        if not isinstance(item_holder, ItemHolder):
+class Solver(Notifier):
+    def __init__(self, dimension, name="Solver"):
+        if not isinstance(dimension.item_holder, ItemHolder):
             raise TypeError("item_holder must be an instance of ItemHolder")
-        if not isinstance(container_holder, ContainerHolder):
+        if not isinstance(dimension.container_holder, ContainerHolder):
             raise TypeError("container_holder must be an instance of ContainerHolder")
-        self.item_holder = item_holder
-        self.container_holder = container_holder
-        self.problem = problem
-        self.crowd_holder = crowd_holder
+        super().__init__(name)
+        self.item_holder = dimension.item_holder
+        self.container_holder = dimension.container_holder
+        self.problem = dimension.problem_loader.loaded_problem
+        self.crowd_holder = dimension.crowd_holder
         self.solution_data = []
         self.start_time = -1
 
@@ -40,11 +43,43 @@ class Solver:
         )
         plt.show()
 
+    def vary(self):
+        if not self.solution_data:
+            self.warning("No solution data to vary.")
+        else:
+            removed = None
+            removed_from = None
+            added_to = None
+            for item in self.solution_data:
+                if not removed:
+                    if random.random() < 0.1:
+                        self.debug(f"Removing from {item['items']}")
+                        removed = random.choice(item['items'])
+                        item['items'].remove(removed)
+                        removed_from = item
+                else:
+                    sum_items = 0
+                    for i in item['items']:
+                        sum_items += int(i)
+                    maxim = int(self.problem.bin_capacity)
+                    if sum_items + int(removed) <= maxim:
+                        self.debug(f"Adding {removed} to {item}")
+                        item['items'].append(removed)
+                        added_to = item
+                        break
+            if removed and not added_to:
+                # put back
+                self.debug(f"Putting back {removed} to {removed_from}")
+                removed_from['items'].append(removed)
+
+
     def solve(self):
+        if hasattr(self.item_holder,"collection") and len(self.item_holder.collection)==0\
+                and len(self.container_holder.collection)==0:
+            self.warning(f"No items to solve for in {self.item_holder}")
+            return False
         if self.start_time == -1:
             self.start_time = time.perf_counter()
-        if hasattr(self.item_holder,"collection") and len(self.item_holder.collection)==0:
-            return False
         self.item_holder.deselect()
         self.container_holder.deselect()
         return True
@@ -53,15 +88,14 @@ class Solver:
         end_time = time.perf_counter()
         # Log the solution
         solution_data = []
-        count=0
         for container in self.container_holder.collection:
             items_in_container = [item.weight for item in container.collection]
             solution_data.append({
-                'ID': count,
                 'items': items_in_container,
                 'Capacity': container.carrying/container.capacity,
                 'time': end_time - self.start_time
             })
-            count+=1
         self.solution_data = solution_data
+        self.vary()
         self.crowd_holder.addition(pd.DataFrame(self.solution_data))
+        self.start_time = -1

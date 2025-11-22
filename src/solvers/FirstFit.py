@@ -7,8 +7,9 @@ class FirstFit(Solver):
     """
     Places each item in the first container that can contain it.
     """
-    def __init__(self, item_holder, container_holder, problem, crowd_holder):
-        super().__init__(item_holder, container_holder, problem, crowd_holder)
+    def __init__(self, dimension):
+        super().__init__(dimension,"FirstFit")
+        self.setDebug(True)
 
     def solve(self):
         if not super().solve():

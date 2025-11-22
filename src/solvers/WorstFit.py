@@ -4,13 +4,12 @@ from direct.showbase.MessengerGlobal import messenger
 from src.solvers.Solver import Solver
 
 
-class WorstFit(Notifier, Solver):
+class WorstFit(Solver):
     """
     Places each item in the most filled container that can still contain it.
     """
-    def __init__(self, item_holder, container_holder, problem, crowd_holder):
-        super().__init__("WorstFit")
-        Solver.__init__(self, item_holder, container_holder, problem, crowd_holder)
+    def __init__(self, dimension):
+        super().__init__(dimension, "WorstFit")
         self.setDebug(False)
 
     def solve(self):
