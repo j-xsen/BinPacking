@@ -10,7 +10,6 @@ from src.dimensions.oned.Item import Item
 class ItemHolder(CarouselHolder, DirectObject):
     def __init__(self):
         super().__init__(Item, (0, 0, -0.7), 1, 'ItemHolder')
-        self.notify.setDebug(True)
 
         self.create_new_item_button = DirectButton(
             text="Create New Item",

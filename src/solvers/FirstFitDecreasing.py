@@ -1,18 +1,17 @@
 from direct.directnotify.Notifier import Notifier
 from direct.showbase.MessengerGlobal import messenger
 
+from src.solvers.Solver import Solver
 
-class FirstFitDecreasing(Notifier):
+
+class FirstFitDecreasing(Notifier, Solver):
     """
     Sort items in decreasing order by weight,
     then place each item in the first container that can contain it
     """
     def __init__(self, item_holder, container_holder, problem):
         super().__init__("FirstFitDecreasing")
-        self.setDebug(True)
-        self.item_holder = item_holder
-        self.container_holder = container_holder
-        self.problem = problem
+        Solver.__init__(self, item_holder, container_holder, problem)
 
     def solve(self):
         self.item_holder.deselect()
@@ -42,3 +41,5 @@ class FirstFitDecreasing(Notifier):
 
         self.item_holder.deselect()
         self.container_holder.deselect()
+
+        self.solved()

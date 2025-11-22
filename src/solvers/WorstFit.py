@@ -1,18 +1,17 @@
 from direct.directnotify.Notifier import Notifier
 from direct.showbase.MessengerGlobal import messenger
 
+from src.solvers.Solver import Solver
 
-class WorstFit(Notifier):
+
+class WorstFit(Notifier, Solver):
     """
     Places each item in the most filled container that can still contain it.
     """
     def __init__(self, item_holder, container_holder, problem):
         super().__init__("WorstFit")
-        self.setDebug(True)
-
-        self.item_holder = item_holder
-        self.container_holder = container_holder
-        self.problem = problem
+        Solver.__init__(self, item_holder, container_holder, problem)
+        self.setDebug(False)
 
     def solve(self):
         self.item_holder.deselect()
@@ -48,3 +47,5 @@ class WorstFit(Notifier):
 
         self.item_holder.deselect()
         self.container_holder.deselect()
+
+        self.solved()

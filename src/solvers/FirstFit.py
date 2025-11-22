@@ -1,14 +1,14 @@
 from direct.showbase.MessengerGlobal import messenger
 
+from src.solvers.Solver import Solver
 
-class FirstFit:
+
+class FirstFit(Solver):
     """
     Places each item in the first container that can contain it.
     """
     def __init__(self, item_holder, container_holder, problem):
-        self.item_holder = item_holder
-        self.container_holder = container_holder
-        self.problem = problem
+        super().__init__(item_holder, container_holder, problem)
 
     def solve(self):
         self.item_holder.deselect()
@@ -32,3 +32,5 @@ class FirstFit:
                     messenger.send("container-clicked", [new_container])
         self.item_holder.deselect()
         self.container_holder.deselect()
+
+        self.solved()

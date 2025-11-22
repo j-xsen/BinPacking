@@ -17,6 +17,10 @@ loadPrcFileData("", "notify-level-EventManager warning")
 loadPrcFileData("", "notify-level-Messenger warning")
 loadPrcFileData("", "notify-level-ShowBase warning")
 
+# bin packing
+loadPrcFileData("", "notify-level-BinPacking warning")
+loadPrcFileData("", "notify-level-ItemHolder warning")
+
 class BinPacking(ShowBase):
     def __init__(self):
         super().__init__()
