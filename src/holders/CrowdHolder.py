@@ -3,34 +3,18 @@ from direct.gui.DirectFrame import DirectFrame
 from panda3d.core import NodePath
 from pandas import DataFrame
 
+from src.crowds.Crowd import Crowd
+from src.crowds.CrowdControl import CrowdControl
 from src.holders.CarouselHolder import CarouselHolder
 from src.holders.Holder import positions
 from direct.gui import DirectGuiGlobals as DGG
-
-
-class Crowd(NodePath):
-    def __init__(self, data):
-        super().__init__("Crowd")
-        self.data = data
-        self.active = True
-        self.frame=DirectButton(
-            relief=DGG.RIDGE,
-            borderWidth=(0.02, 0.02),
-            frameSize=(-0.1, 0.1, -0.1, 0.1),
-            pos=(0, 0, 0),
-            parent=self,
-            command=self.command,
-            text=f"{data["Capacity"].mean():.2f}\n#{data.shape[0]}",
-            text_scale=0.06,
-        )
-    def command(self):
-        print(self.data)
 
 
 class CrowdHolder(CarouselHolder):
     def __init__(self):
         super().__init__(Crowd, (0, 0, 0), 1)
         self._time = 0
+        self.crowd_buttons = CrowdControl()
 
     @property
     def time(self):

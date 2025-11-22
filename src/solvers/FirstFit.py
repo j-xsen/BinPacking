@@ -9,7 +9,6 @@ class FirstFit(Solver):
     """
     def __init__(self, dimension):
         super().__init__(dimension,"FirstFit")
-        self.setDebug(True)
 
     def solve(self):
         if not super().solve():
