@@ -79,6 +79,12 @@ class Container(Holder):
             text_fg=(1, 1, 1, 1),
             )
 
+    def hide(self):
+        self.frame.hide()
+
+    def show(self):
+        self.frame.show()
+
     def destroy(self):
         for child in self.frame.getChildren():
             child.remove_node()
@@ -117,7 +123,6 @@ class Container(Holder):
         if isinstance(add, ValuedItem):
             self.value += int(add.value)
         self.carrying += int(add.weight)
-
 
         messenger.send("container-clicked",[None])
         messenger.send("item-clicked",[None])

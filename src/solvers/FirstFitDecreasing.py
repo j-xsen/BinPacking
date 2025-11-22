@@ -19,13 +19,13 @@ class FirstFitDecreasing(Notifier):
         self.container_holder.deselect()
 
         for item in sorted(self.item_holder.collection, key=lambda x: x.weight, reverse=True):
+            if not item.active:
+                continue
+            cur_bins = self.container_holder.collection
+            item.show()
             self.debug("==========================")
             self.debug(f"Placing {item}")
             self.debug("==========================")
-            cur_bins = self.container_holder.collection
-            item.show()
-            if not item.active:
-                continue
             messenger.send("item-clicked", [item])
             placed = False
             for cur_bin in cur_bins:

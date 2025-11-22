@@ -6,15 +6,10 @@ from src.IDNodePath import IDNodePath
 
 positions = [
     [[0.0, 0.0, 0.0]],  # 1 item
-
     [[-1.0, 0.0, 0.0], [1.0, 0.0, 0.0]],  # 2 items
-
     [[-1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [1.0, 0.0, 0.0]],  # 3 items
-
     [[-1.0, 0.0, 0.0], [-0.3333, 0.0, 0.0], [0.3333, 0.0, 0.0], [1.0, 0.0, 0.0]],  # 4 items
-
     [[-1.0, 0.0, 0.0], [-0.5, 0.0, 0.0], [0.0, 0.0, 0.0], [0.5, 0.0, 0.0], [1.0, 0.0, 0.0]],  # 5 items
-
     [[-1.0, 0.0, 0.0], [-0.6, 0.0, 0.0], [-0.2, 0.0, 0.0], [0.2, 0.0, 0.0], [0.6, 0.0, 0.0], [1.0, 0.0, 0.0]]  # 6 items
 ]
 
@@ -77,8 +72,15 @@ class Holder(IDNodePath):
 
     def rearrange(self):
         active_collection = []
+        skip = 0
+        if hasattr(self, "current_offset"):
+            skip = self.current_offset
         for item in self.collection:
             if item.active:
+                if skip > 0:
+                    item.hide()
+                    skip -= 1
+                    continue
                 if len(active_collection) < len(positions):
                     item.show()
                     active_collection.append(item)

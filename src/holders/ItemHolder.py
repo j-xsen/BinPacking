@@ -2,13 +2,15 @@ from direct.gui.DirectButton import DirectButton
 from direct.showbase.DirectObject import DirectObject
 
 from src.dimensions.oned.ValuedItem import ValuedItem
+from src.holders.CarouselHolder import CarouselHolder
 from src.holders.Holder import Holder
 from src.dimensions.oned.Item import Item
 
 
-class ItemHolder(Holder, DirectObject):
+class ItemHolder(CarouselHolder, DirectObject):
     def __init__(self):
         super().__init__(Item, (0, 0, -0.7), 1, 'ItemHolder')
+        self.notify.setDebug(False)
 
         self.create_new_item_button = DirectButton(
             text="Create New Item",

@@ -6,6 +6,7 @@ from src.solvers.Solvers import Solvers
 from src.holders.ContainerHolder import ContainerHolder
 from src.holders.ItemHolder import ItemHolder
 
+prob = "problem50"
 
 class OneD(NodePath):
     def __init__(self):
@@ -19,7 +20,7 @@ class OneD(NodePath):
         self.container_holder.reparent_to(self)
 
         self.problem_loader = ProblemLoader(self.item_holder, self.container_holder)
-        self.problem_loader.load("problem50")
+        self.problem_loader.load(prob)
 
         self.reset_button = DirectButton(
             text="Reset",
@@ -34,7 +35,7 @@ class OneD(NodePath):
     def reset(self):
         self.item_holder.reset()
         self.container_holder.reset()
-        self.problem_loader.load("problem1")
+        self.problem_loader.load(prob)
 
     def render(self):
         return f"Rendering 1D view with data: {self.data}"

@@ -1,11 +1,13 @@
 from direct.gui.DirectButton import DirectButton
+from direct.gui.DirectLabel import DirectLabel
 from direct.showbase.DirectObject import DirectObject
 
+from src.holders.CarouselHolder import CarouselHolder
 from src.holders.Container import Container
 from src.holders.Holder import Holder
 
 
-class ContainerHolder(Holder, DirectObject):
+class ContainerHolder(CarouselHolder, DirectObject):
     def __init__(self):
         super().__init__(Container, (0, 0, 0.7), 1, 'ContainerHolder')
 
@@ -18,7 +20,25 @@ class ContainerHolder(Holder, DirectObject):
             command=self.create_new_container
         )
 
+        self.container_number = DirectLabel(
+            text="#0",
+            parent=base.a2dTopLeft,
+            scale=0.08,
+            pos=(.4,0,-0.15),
+            frameColor=(0,0,0,0),
+            text_fg=(1,1,1,1),
+        )
+
         self.accept("container-clicked", self.on_item_clicked)
+
+    def reset(self):
+        super().reset()
+        self.container_number.setText("#0")
+
+    def addition(self, add):
+        super().addition(add)
+
+        self.container_number.setText(f"#{str(len(self.collection))}")
 
     def set_capacity(self, cap):
         self.capacity = cap
