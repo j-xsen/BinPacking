@@ -44,33 +44,49 @@ class Solver(Notifier):
         plt.show()
 
     def vary(self):
+        REMOVE_ITEM_CHANCE = 0.25
+        PUT_BACK_CHANCE = 0.5
+        END_VARY_CHANCE = 0.1
         if not self.solution_data:
             self.warning("No solution data to vary.")
         else:
-            removed = None
-            removed_from = None
-            added_to = None
-            for item in self.solution_data:
-                if not removed:
-                    if random.random() < 0.1:
-                        self.debug(f"Removing from {item['items']}")
-                        removed = random.choice(item['items'])
-                        item['items'].remove(removed)
-                        removed_from = item
-                else:
-                    sum_items = 0
-                    for i in item['items']:
-                        sum_items += int(i)
-                    maxim = int(self.problem.bin_capacity)
-                    if sum_items + int(removed) <= maxim:
-                        self.debug(f"Adding {removed} to {item}")
-                        item['items'].append(removed)
-                        added_to = item
-                        break
-            if removed and not added_to:
-                # put back
-                self.debug(f"Putting back {removed} to {removed_from}")
-                removed_from['items'].append(removed)
+            done = False
+            while not done:
+                removed = None
+                removed_from = None
+                added_to = None
+                for item in self.solution_data:
+                    if not item['items']:
+                        continue
+                    if not removed:
+                        if random.random() < REMOVE_ITEM_CHANCE:
+                            self.debug(f"Removing from {item['items']}")
+                            removed = min(item['items'])
+                            item['items'].remove(removed)
+                            removed_from = item
+                    else:
+                        sum_items = 0
+                        for i in item['items']:
+                            sum_items += int(i)
+                        maxim = int(self.problem.bin_capacity)
+                        if sum_items + int(removed) <= maxim:
+                            self.debug(f"Adding {removed} to {item}")
+                            item['items'].append(removed)
+                            added_to = item
+                            break
+                if removed and not added_to:
+                    if random.random() < PUT_BACK_CHANCE:
+                        # put back
+                        self.debug(f"Putting back {removed} to {removed_from}")
+                        removed_from['items'].append(removed)
+                    else:
+                        # make new container
+                        self.debug(f"Creating new container for {removed}")
+                        self.solution_data.append({
+                            'items': [removed],
+                            'Capacity': int(removed)/int(self.problem.bin_capacity),})
+                if random.random() < END_VARY_CHANCE:
+                    done = True
 
 
     def solve(self):
@@ -86,16 +102,36 @@ class Solver(Notifier):
 
     def solved(self):
         end_time = time.perf_counter()
-        # Log the solution
+
+        # create dataframe for solution
         solution_data = []
         for container in self.container_holder.collection:
             items_in_container = [item.weight for item in container.collection]
             solution_data.append({
                 'items': items_in_container,
+                'sum': container.carrying,
                 'Capacity': container.carrying/container.capacity,
                 'time': end_time - self.start_time
             })
         self.solution_data = solution_data
+
+        # perform variation on solution
         self.vary()
-        self.crowd_holder.addition(pd.DataFrame(self.solution_data))
+
+        # clean solution data
+        new_solution = []
+        for s in solution_data:
+            if s['items']:
+                sum_items = 0
+                for i in s['items']:
+                    sum_items += int(i)
+                maxim = int(self.problem.bin_capacity)
+                if sum_items > maxim:
+                    self.error(f"Container over capacity: {s['items']} with total {sum_items} > {maxim}")
+                cap = sum_items / maxim
+                s['Capacity'] = cap
+                s['sum'] = sum_items
+                new_solution.append(s)
+
+        self.crowd_holder.addition(pd.DataFrame(new_solution))
         self.start_time = -1
