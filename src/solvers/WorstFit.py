@@ -19,7 +19,7 @@ class WorstFit(Notifier):
         self.container_holder.deselect()
 
         cur_bins = self.container_holder.collection
-        for item in self.item_holder.collection:
+        for i,item in enumerate(self.item_holder.collection[:]):
             if not item.active:
                 continue
 

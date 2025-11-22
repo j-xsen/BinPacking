@@ -18,7 +18,7 @@ class FirstFitDecreasing(Notifier):
         self.item_holder.deselect()
         self.container_holder.deselect()
 
-        for item in sorted(self.item_holder.collection, key=lambda x: x.weight, reverse=True):
+        for item in sorted(self.item_holder.collection, key=lambda x: int(x.weight), reverse=True):
             if not item.active:
                 continue
             cur_bins = self.container_holder.collection

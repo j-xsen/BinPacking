@@ -49,6 +49,9 @@ class Holder(IDNodePath):
         if not item:
             self.deselect()
             return
+        if not isinstance(item, self.item_type):
+            self.notify.warning(f"Clicked item is not of type {self.item_type.__name__}")
+            return
         if not self.selected:
             item.select()
             self.selected = item
@@ -107,8 +110,14 @@ class Holder(IDNodePath):
         self.rearrange()
 
     def subtraction(self, sub):
+        if not sub:
+            self.notify.error("Cannot subtract None from Holder")
+            return
         if self.selected and self.selected == sub:
             self.selected.deselect()
             self.selected = None
         if sub in self.collection:
             self.collection.remove(sub)
+        else:
+            self.notify.warning(f"{sub} not found in Holder collection")
+        self.rearrange()

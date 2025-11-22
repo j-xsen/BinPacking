@@ -20,7 +20,8 @@ class BestFit(Notifier):
         self.container_holder.deselect()
 
         cur_bins = self.container_holder.collection
-        for item in self.item_holder.collection:
+
+        for i,item in enumerate(self.item_holder.collection[:]):
             if not item.active:
                 continue
 
@@ -39,10 +40,12 @@ class BestFit(Notifier):
                         best_remain = remain
                         best_bin = cur_bin
             if not best_bin or not best_bin.can_add(item):
+                self.debug("Creating new container")
                 best_bin = self.container_holder.create_new_container()
                 best_remain = best_bin.get_remainder()
 
             if best_bin.can_add(item):
+                self.debug(f"Placing {item} in {best_bin}")
                 messenger.send("item-clicked", [item])
                 messenger.send("container-clicked", [best_bin])
 

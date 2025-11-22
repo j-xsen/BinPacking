@@ -13,7 +13,7 @@ class FirstFit:
     def solve(self):
         self.item_holder.deselect()
         self.container_holder.deselect()
-        for item in self.item_holder.collection:
+        for i,item in enumerate(self.item_holder.collection[:]):
             cur_bins = self.container_holder.collection
             if not item.active:
                 continue

@@ -45,6 +45,14 @@ class CarouselHolder(Holder):
         if len(self.collection) > len(positions):
             self.right_button['state'] = DGG.NORMAL
 
+    def subtraction(self, sub):
+        super().subtraction(sub)
+
+        if len(self.collection) <= len(positions):
+            self.current_offset = 0
+            self.left_button['state'] = DGG.DISABLED
+            self.right_button['state'] = DGG.DISABLED
+
     def move_left(self):
         self.current_offset -= 1
 

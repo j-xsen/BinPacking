@@ -43,12 +43,14 @@ class BinPacking(ShowBase):
 
     def on_holder_update(self):
         if self.dimension.item_holder.selected and self.dimension.container_holder.selected:
+            ise = self.dimension.item_holder.selected
+            cs = self.dimension.container_holder.selected
             # check if valid
-            if self.dimension.container_holder.selected.can_add(self.dimension.item_holder.selected):
-                self.notify.debug(f"Moving {self.dimension.item_holder.selected} to"
-                                  f" {self.dimension.container_holder.selected}")
-                self.dimension.container_holder.selected.addition(self.dimension.item_holder.selected)
-                self.dimension.item_holder.subtraction(self.dimension.item_holder.selected)
+            if self.dimension.container_holder.selected.can_add(ise):
+                self.notify.debug(f"Moving {ise} to"
+                                  f" {cs}")
+                self.dimension.container_holder.selected.addition(ise)
+                self.dimension.item_holder.subtraction(ise)
                 messenger.send("holder-updated")
             else:
                 self.dimension.container_holder.selected.deselect()
