@@ -7,12 +7,13 @@ class FirstFit(Solver):
     """
     Places each item in the first container that can contain it.
     """
-    def __init__(self, item_holder, container_holder, problem):
-        super().__init__(item_holder, container_holder, problem)
+    def __init__(self, item_holder, container_holder, problem, crowd_holder):
+        super().__init__(item_holder, container_holder, problem, crowd_holder)
 
     def solve(self):
-        self.item_holder.deselect()
-        self.container_holder.deselect()
+        if not super().solve():
+            return False
+
         for i,item in enumerate(self.item_holder.collection[:]):
             cur_bins = self.container_holder.collection
             if not item.active:
@@ -30,7 +31,7 @@ class FirstFit(Solver):
                 new_container = self.container_holder.create_new_container()
                 if new_container.can_add(item):
                     messenger.send("container-clicked", [new_container])
-        self.item_holder.deselect()
-        self.container_holder.deselect()
 
-        self.solved()
+        super().solve()
+
+        return self.solved()

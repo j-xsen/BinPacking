@@ -9,13 +9,13 @@ class FirstFitDecreasing(Notifier, Solver):
     Sort items in decreasing order by weight,
     then place each item in the first container that can contain it
     """
-    def __init__(self, item_holder, container_holder, problem):
+    def __init__(self, item_holder, container_holder, problem, crowd_holder):
         super().__init__("FirstFitDecreasing")
-        Solver.__init__(self, item_holder, container_holder, problem)
+        Solver.__init__(self, item_holder, container_holder, problem, crowd_holder)
 
     def solve(self):
-        self.item_holder.deselect()
-        self.container_holder.deselect()
+        if not super().solve():
+            return False
 
         for item in sorted(self.item_holder.collection, key=lambda x: int(x.weight), reverse=True):
             if not item.active:
@@ -39,7 +39,6 @@ class FirstFitDecreasing(Notifier, Solver):
                 if new_container.can_add(item):
                     messenger.send("container-clicked", [new_container])
 
-        self.item_holder.deselect()
-        self.container_holder.deselect()
+        super().solve()
 
-        self.solved()
+        return self.solved()

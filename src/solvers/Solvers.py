@@ -10,7 +10,7 @@ from src.solvers.WorstFit import WorstFit
 
 
 class Solvers:
-    def __init__(self, item_holder, container_holder, problem):
+    def __init__(self, item_holder, container_holder, problem, crowd_holder):
         self.frame = DirectFrame(
             frameColor=(0.8, 0.8, 0.8, 1),
             frameSize=(-0.75, 0.75, -0.1, 0.1),
@@ -20,7 +20,7 @@ class Solvers:
             text_pos=(-0.65, 0.06),
         )
 
-        first_fit = FirstFit(item_holder, container_holder, problem)
+        first_fit = FirstFit(item_holder, container_holder, problem, crowd_holder)
         self.first_fit = DirectButton(
             parent=self.frame,
             text="First Fit",
@@ -29,7 +29,7 @@ class Solvers:
             command=first_fit.solve
         )
 
-        first_fit_decreasing = FirstFitDecreasing(item_holder, container_holder, problem)
+        first_fit_decreasing = FirstFitDecreasing(item_holder, container_holder, problem, crowd_holder)
         self.first_fit_decreasing = DirectButton(
             parent=self.frame,
             text="First Fit Decreasing",
@@ -48,7 +48,7 @@ class Solvers:
         # )
         # self.greedy_value.hide()
 
-        best_fit = BestFit(item_holder, container_holder, problem)
+        best_fit = BestFit(item_holder, container_holder, problem, crowd_holder)
         self.best_fit = DirectButton(
             parent=self.frame,
             text="Best Fit",
@@ -57,7 +57,7 @@ class Solvers:
             command=best_fit.solve
         )
 
-        best_fit_decreasing = BestFitDecreasing(item_holder, container_holder, problem)
+        best_fit_decreasing = BestFitDecreasing(item_holder, container_holder, problem, crowd_holder)
         self.best_fit_decreasing = DirectButton(
             parent=self.frame,
             text="Best Fit Decreasing",
@@ -66,7 +66,7 @@ class Solvers:
             command=best_fit_decreasing.solve
         )
 
-        worst_fit = WorstFit(item_holder, container_holder, problem)
+        worst_fit = WorstFit(item_holder, container_holder, problem, crowd_holder)
         self.worst_fit = DirectButton(
             parent=self.frame,
             text="Worst Fit",

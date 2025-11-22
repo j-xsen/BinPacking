@@ -4,10 +4,11 @@ from matplotlib import pyplot as plt
 
 
 class Solver:
-    def __init__(self, item_holder, container_holder, problem):
+    def __init__(self, item_holder, container_holder, problem, crowd_holder):
         self.item_holder = item_holder
         self.container_holder = container_holder
         self.problem = problem
+        self.crowd_holder = crowd_holder
 
         self.solution_data = []
 
@@ -24,14 +25,18 @@ class Solver:
         plt.show()
 
     def solve(self):
-        pass
+        if len(self.item_holder.collection)==0:
+            return False
+        self.item_holder.deselect()
+        self.container_holder.deselect()
+        return True
 
     def solved(self):
         # Log the solution
         solution_data = []
         count=0
         for container in self.container_holder.collection:
-            items_in_container = [item.uid for item in container.collection]
+            items_in_container = [item.weight for item in container.collection]
             solution_data.append({
                 'ID': count,
                 'items': items_in_container,
@@ -39,5 +44,4 @@ class Solver:
             })
             count+=1
         self.solution_data = solution_data
-
-        self.retrieve_data()
+        self.crowd_holder.addition(pd.DataFrame(self.solution_data))

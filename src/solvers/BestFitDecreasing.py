@@ -8,13 +8,13 @@ class BestFitDecreasing(Notifier, Solver):
     """
     Places each item in the least filled container that can contain it.
     """
-    def __init__(self, item_holder, container_holder, problem):
+    def __init__(self, item_holder, container_holder, problem, crowd_holder):
         super().__init__("BestFitDecreasing")
-        Solver.__init__(self, item_holder, container_holder, problem)
+        Solver.__init__(self, item_holder, container_holder, problem, crowd_holder)
 
     def solve(self):
-        self.item_holder.deselect()
-        self.container_holder.deselect()
+        if not super().solve():
+            return False
 
         cur_bins = self.container_holder.collection
         for item in sorted(self.item_holder.collection, key=lambda x: int(x.weight), reverse=True):
@@ -44,7 +44,6 @@ class BestFitDecreasing(Notifier, Solver):
                 messenger.send("item-clicked", [item])
                 messenger.send("container-clicked", [best_bin])
 
-        self.item_holder.deselect()
-        self.container_holder.deselect()
+        super().solve()
 
-        self.solved()
+        return self.solved()

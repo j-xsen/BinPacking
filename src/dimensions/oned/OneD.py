@@ -2,6 +2,7 @@ from direct.gui.DirectButton import DirectButton
 from panda3d.core import NodePath
 
 from src.ProblemLoader import ProblemLoader
+from src.holders.CrowdHolder import CrowdHolder
 from src.solvers.Solvers import Solvers
 from src.holders.ContainerHolder import ContainerHolder
 from src.holders.ItemHolder import ItemHolder
@@ -13,11 +14,13 @@ class OneD(NodePath):
         super().__init__('1DView')
         self.item_holder = ItemHolder()
         self.container_holder = ContainerHolder()
+        self.crowd_holder = CrowdHolder()
 
         camera.set_pos(101.66,-124.8,13.74)
 
         self.item_holder.reparent_to(self)
         self.container_holder.reparent_to(self)
+        self.crowd_holder.reparent_to(self)
 
         self.problem_loader = ProblemLoader(self.item_holder, self.container_holder)
         self.problem_loader.load(prob)
@@ -30,7 +33,8 @@ class OneD(NodePath):
             command=self.reset
         )
 
-        self.solvers = Solvers(self.item_holder, self.container_holder, self.problem_loader.loaded_problem)
+        self.solvers = Solvers(self.item_holder, self.container_holder, self.problem_loader.loaded_problem,
+                               self.crowd_holder)
 
     def reset(self):
         self.item_holder.reset()
