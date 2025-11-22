@@ -1,3 +1,7 @@
+import random
+import copy
+import time
+
 from direct.gui.DirectButton import DirectButton
 from direct.gui.DirectFrame import DirectFrame
 
@@ -10,7 +14,7 @@ from src.solvers.WorstFit import WorstFit
 
 
 class Solvers:
-    def __init__(self, item_holder, container_holder, problem, crowd_holder):
+    def __init__(self,dimension):
         self.frame = DirectFrame(
             frameColor=(0.8, 0.8, 0.8, 1),
             frameSize=(-0.75, 0.75, -0.1, 0.1),
@@ -20,7 +24,11 @@ class Solvers:
             text_pos=(-0.65, 0.06),
         )
 
-        first_fit = FirstFit(item_holder, container_holder, problem, crowd_holder)
+        self.dimension=dimension
+
+        first_fit = FirstFit(dimension.item_holder, dimension.container_holder,
+                             dimension.problem_loader.loaded_problem,
+                             dimension.crowd_holder)
         self.first_fit = DirectButton(
             parent=self.frame,
             text="First Fit",
@@ -29,7 +37,9 @@ class Solvers:
             command=first_fit.solve
         )
 
-        first_fit_decreasing = FirstFitDecreasing(item_holder, container_holder, problem, crowd_holder)
+        first_fit_decreasing = FirstFitDecreasing(dimension.item_holder, dimension.container_holder,
+                             dimension.problem_loader.loaded_problem,
+                             dimension.crowd_holder)
         self.first_fit_decreasing = DirectButton(
             parent=self.frame,
             text="First Fit Decreasing",
@@ -48,7 +58,9 @@ class Solvers:
         # )
         # self.greedy_value.hide()
 
-        best_fit = BestFit(item_holder, container_holder, problem, crowd_holder)
+        best_fit = BestFit(dimension.item_holder, dimension.container_holder,
+                             dimension.problem_loader.loaded_problem,
+                             dimension.crowd_holder)
         self.best_fit = DirectButton(
             parent=self.frame,
             text="Best Fit",
@@ -57,7 +69,9 @@ class Solvers:
             command=best_fit.solve
         )
 
-        best_fit_decreasing = BestFitDecreasing(item_holder, container_holder, problem, crowd_holder)
+        best_fit_decreasing = BestFitDecreasing(dimension.item_holder, dimension.container_holder,
+                             dimension.problem_loader.loaded_problem,
+                             dimension.crowd_holder)
         self.best_fit_decreasing = DirectButton(
             parent=self.frame,
             text="Best Fit Decreasing",
@@ -66,7 +80,9 @@ class Solvers:
             command=best_fit_decreasing.solve
         )
 
-        worst_fit = WorstFit(item_holder, container_holder, problem, crowd_holder)
+        worst_fit = WorstFit(dimension.item_holder, dimension.container_holder,
+                             dimension.problem_loader.loaded_problem,
+                             dimension.crowd_holder)
         self.worst_fit = DirectButton(
             parent=self.frame,
             text="Worst Fit",
@@ -74,3 +90,24 @@ class Solvers:
             pos=(0, 0, 0),
             command=worst_fit.solve
         )
+
+        self.solvers = [first_fit, first_fit_decreasing, best_fit, best_fit_decreasing, worst_fit]
+
+        gen_ten = DirectButton(
+            parent=self.frame,
+            text="Run 10 times",
+            scale=0.05,
+            pos=(0, 0, -.07),
+            command=self.generate_x,
+            extraArgs=[10]
+        )
+
+    def generate_x(self, x):
+        start = time.perf_counter()
+        for _ in range(x):
+            new_solver = random.choice(self.solvers)
+            new_solver.solve()
+            self.dimension.reset()
+        end = time.perf_counter()
+        self.dimension.crowd_holder.time = end-start
+

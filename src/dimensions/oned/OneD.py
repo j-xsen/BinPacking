@@ -33,8 +33,7 @@ class OneD(NodePath):
             command=self.reset
         )
 
-        self.solvers = Solvers(self.item_holder, self.container_holder, self.problem_loader.loaded_problem,
-                               self.crowd_holder)
+        self.solvers = Solvers(self)
 
     def reset(self):
         self.item_holder.reset()

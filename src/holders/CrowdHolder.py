@@ -30,7 +30,14 @@ class Crowd(NodePath):
 class CrowdHolder(CarouselHolder):
     def __init__(self):
         super().__init__(Crowd, (0, 0, 0), 1)
-        self.crowds = []
+        self._time = 0
+
+    @property
+    def time(self):
+        return self._time
+    @time.setter
+    def time(self, value):
+        self._time = value
 
     def addition(self, add):
         if isinstance(add, DataFrame):
