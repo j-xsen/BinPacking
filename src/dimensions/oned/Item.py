@@ -57,4 +57,4 @@ class Item(IDNodePath):
         self._weight = value
 
     def __str__(self):
-        return f"Item-{self.uid} (Weight: {self.weight})"
+        return f"Item-{self.uid} ({self.weight})"

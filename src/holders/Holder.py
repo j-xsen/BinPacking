@@ -36,6 +36,9 @@ class Holder(IDNodePath):
         self.item_type = item_type
         self.collection = []
 
+    def __str__(self):
+        return f"Holder-{self.uid} ({len(self.collection)} items)"
+
     def reset(self):
         self.deselect()
         for item in self.collection:
@@ -99,7 +102,6 @@ class Holder(IDNodePath):
             return
         add.reparent_to(self.frame)
         self.collection.append(add)
-        self.notify.debug(f"Addition {add.get_name()} added to Holder")
         self.rearrange()
 
     def subtraction(self, sub):

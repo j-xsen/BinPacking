@@ -3,7 +3,7 @@ import random
 from direct.task.TaskManagerGlobal import taskMgr
 from panda3d.core import NodePath, LVecBase4f
 
-from geom.Square import Square
+from src.geom.Square import Square
 
 
 class Cube(NodePath):

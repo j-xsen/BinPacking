@@ -44,6 +44,9 @@ class Container(Holder):
 
         self.set_tag("container", '1')
 
+    def __str__(self):
+        return f"Container-{self.uid} ({self.carrying}/{self.capacity})"
+
     @property
     def capacity(self):
         return self._capacity

@@ -24,7 +24,6 @@ class ItemHolder(Holder, DirectObject):
         new_item = Item(weight=weight)
         self.addition(new_item)
         self.notify.debug(f"New Item created: {new_item}")
-        self.notify.debug(f"Current Items: {self.collection}")
         return new_item
 
     def create_new_valued_item(self, weight=1, value=1):

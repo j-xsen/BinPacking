@@ -10,7 +10,7 @@ from src.dimensions.oned.OneD import OneD
 # loadPrcFileData("", "want-tk #t")
 loadPrcFileData("", "window-title Bin Packing Visualization")
 loadPrcFileData("", "win-origin 100 100")
-loadPrcFileData("", "default-directnotify-level warning")
+loadPrcFileData("", "default-directnotify-level debug")
 
 # warning level
 loadPrcFileData("", "notify-level-EventManager warning")
@@ -45,9 +45,8 @@ class BinPacking(ShowBase):
         if self.dimension.item_holder.selected and self.dimension.container_holder.selected:
             # check if valid
             if self.dimension.container_holder.selected.can_add(self.dimension.item_holder.selected):
-                self.notify.debug(f"Moving Item {self.dimension.item_holder.selected.get_name()}"
-                                  f" ({self.dimension.item_holder.selected.weight}) to Container"
-                                  f" {self.dimension.container_holder.selected.get_name()}")
+                self.notify.debug(f"Moving {self.dimension.item_holder.selected} to"
+                                  f" {self.dimension.container_holder.selected}")
                 self.dimension.container_holder.selected.addition(self.dimension.item_holder.selected)
                 self.dimension.item_holder.subtraction(self.dimension.item_holder.selected)
                 messenger.send("holder-updated")

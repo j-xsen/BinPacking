@@ -4,6 +4,7 @@ from direct.gui.DirectFrame import DirectFrame
 from src.solvers.BestFit import BestFit
 from src.solvers.GreedyValue import GreedyValue
 from src.solvers.GreedyWeight import GreedyWeight
+from src.solvers.WorstFit import WorstFit
 
 
 class Solvers:
@@ -43,4 +44,13 @@ class Solvers:
             scale=0.05,
             pos=(0.4, 0, 0),
             command=best_fit.solve
+        )
+
+        worst_fit = WorstFit(item_holder, container_holder, problem)
+        self.worst_fit = DirectButton(
+            parent=self.frame,
+            text="Worst Fit Solver",
+            scale=0.05,
+            pos=(0, 0, -0.09),
+            command=worst_fit.solve
         )
