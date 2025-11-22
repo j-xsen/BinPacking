@@ -1,7 +1,10 @@
 from direct.showbase.MessengerGlobal import messenger
 
 
-class GreedyWeight:
+class FirstFit:
+    """
+    Places each item in the first container that can contain it.
+    """
     def __init__(self, item_holder, container_holder, problem):
         self.item_holder = item_holder
         self.container_holder = container_holder

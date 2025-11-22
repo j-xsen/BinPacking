@@ -3,6 +3,11 @@ from panda3d.core import NodePath
 
 
 class GreedyValue(NodePath):
+    """
+    For knapsack problem (variation of bin packing),
+     a constant number of containers,
+     places each item in order of decreasing value/weight ratio
+    """
     def __init__(self, item_holder, container_holder, problem):
         super().__init__('GreedyValueSolver')
         self.notify = directNotify.newCategory("GreedyValue")

@@ -2,12 +2,12 @@ from direct.directnotify.Notifier import Notifier
 from direct.showbase.MessengerGlobal import messenger
 
 
-class BestFit(Notifier):
+class BestFitDecreasing(Notifier):
     """
     Places each item in the least filled container that can contain it.
     """
     def __init__(self, item_holder, container_holder, problem):
-        super().__init__("BestFit")
+        super().__init__("BestFitDecreasing")
 
         self.setDebug(True)
 
@@ -20,7 +20,7 @@ class BestFit(Notifier):
         self.container_holder.deselect()
 
         cur_bins = self.container_holder.collection
-        for item in self.item_holder.collection:
+        for item in sorted(self.item_holder.collection, key=lambda x: x.weight, reverse=True):
             if not item.active:
                 continue
 
@@ -43,6 +43,7 @@ class BestFit(Notifier):
                 best_remain = best_bin.get_remainder()
 
             if best_bin.can_add(item):
+                item.show()
                 messenger.send("item-clicked", [item])
                 messenger.send("container-clicked", [best_bin])
 
