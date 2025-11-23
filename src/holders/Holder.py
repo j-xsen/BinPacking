@@ -33,7 +33,8 @@ class Holder(IDNodePath):
         self.collection = []
 
     def __str__(self):
-        return f"Holder-{self.uid} ({len(self.collection)} items)"
+        names = [str(item) for item in self.collection]
+        return f"Holder-{self.uid} ({', '.join(names)})"
 
     def __iter__(self):
         return iter(self.collection)
@@ -78,7 +79,7 @@ class Holder(IDNodePath):
         for item in self.collection:
             if item == obj:
                 return item
-        self.notify.warning(f"{obj} not found in {self.collection}")
+        self.notify.error(f"[get] {obj} not found in {self}")
         return None
 
     def set_pos(self, x, y, z):
@@ -130,7 +131,7 @@ class Holder(IDNodePath):
         if sub in self.collection:
             self.collection.remove(sub)
         else:
-            self.notify.warning(f"{sub} not found in Holder collection")
+            self.notify.error(f"[sub] {sub} not found in {self}")
         self.rearrange()
 
     def return_random(self):

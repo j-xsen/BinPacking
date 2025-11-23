@@ -15,6 +15,7 @@ class CrowdHolder(CarouselHolder):
         super().__init__(Crowd, (0, 0, 0), 1)
         self._time = 0
         self.crowd_buttons = CrowdControl(self)
+        self.past_generations = []
 
     @property
     def time(self):
@@ -37,3 +38,11 @@ class CrowdHolder(CarouselHolder):
         self.rearrange()
         if len(self.collection) > len(positions):
             self.right_button['state'] = DGG.NORMAL
+
+    def new_generation(self):
+        prev_collection = self.collection
+        for i in prev_collection:
+            i.hide()
+        self.past_generations.append(prev_collection)
+        self.collection.clear()
+        self.rearrange()

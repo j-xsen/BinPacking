@@ -44,8 +44,18 @@ class BinPacking(ShowBase):
         # exit
         self.accept("escape", self.userExit)
 
+    def verify_selections(self):
+        if not self.dimension.item_holder.selected:
+            return False
+        if not self.dimension.container_holder.selected:
+            return False
+        if not self.dimension.item_holder.selected in self.dimension.item_holder.collection:
+            self.notify.warning("Selected item not in item holder")
+            return False
+        return True
+
     def on_holder_update(self):
-        if self.dimension.item_holder.selected and self.dimension.container_holder.selected:
+        if self.verify_selections():
             ise = self.dimension.item_holder.selected
             cs = self.dimension.container_holder.selected
             # check if valid

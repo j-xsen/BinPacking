@@ -12,17 +12,28 @@ from src.holders.ItemHolder import ItemHolder
 
 class Solver(Notifier):
     def __init__(self, dimension, name="Solver"):
+        if dimension:
+            if not isinstance(dimension.item_holder, ItemHolder):
+                raise TypeError("item_holder must be an instance of ItemHolder")
+            if not isinstance(dimension.container_holder, ContainerHolder):
+                raise TypeError("container_holder must be an instance of ContainerHolder")
+            super().__init__(name)
+            self.item_holder = dimension.item_holder
+            self.container_holder = dimension.container_holder
+            self.problem = dimension.problem_loader.loaded_problem
+            self.crowd_holder = dimension.crowd_holder
+        self.solution_data = []
+        self.start_time = -1
+
+    def set_dimension(self, dimension):
         if not isinstance(dimension.item_holder, ItemHolder):
             raise TypeError("item_holder must be an instance of ItemHolder")
         if not isinstance(dimension.container_holder, ContainerHolder):
             raise TypeError("container_holder must be an instance of ContainerHolder")
-        super().__init__(name)
         self.item_holder = dimension.item_holder
         self.container_holder = dimension.container_holder
         self.problem = dimension.problem_loader.loaded_problem
         self.crowd_holder = dimension.crowd_holder
-        self.solution_data = []
-        self.start_time = -1
 
     def reset(self):
         for container in self.container_holder.collection:
@@ -47,7 +58,10 @@ class Solver(Notifier):
         REMOVE_ITEM_CHANCE = 0.25
         PUT_BACK_CHANCE = 0.5
         END_VARY_CHANCE = 0.1
-        if not self.solution_data:
+        if isinstance(self.solution_data, pd.DataFrame):
+            if self.solution_data.empty:
+                self.warning("Solution data is empty")
+        elif not self.solution_data:
             self.warning("No solution data to vary.")
         else:
             done = False
@@ -100,12 +114,7 @@ class Solver(Notifier):
         self.container_holder.deselect()
         return True
 
-    def solved(self):
-        if len(self.container_holder.collection)==0:
-            self.warning("No solution data recorded yet.")
-            return False
-        end_time = time.perf_counter()
-
+    def create_data_frame(self, end_time):
         # create dataframe for solution
         solution_data = []
         for container in self.container_holder.collection:
@@ -113,11 +122,24 @@ class Solver(Notifier):
             solution_data.append({
                 'items': items_in_container,
                 'sum': container.carrying,
-                'Capacity': container.carrying/container.capacity,
+                'Capacity': container.carrying / container.capacity,
                 'time': end_time - self.start_time
             })
-        if len(solution_data)==0:
+        if len(solution_data) == 0:
             self.warning("No solution data recorded yet.")
+            return False
+        self.solution_data=solution_data
+        return pd.DataFrame(self.solution_data)
+
+    def solved(self):
+        if len(self.container_holder.collection)==0:
+            self.warning("No solution data recorded yet.")
+            return False
+        end_time = time.perf_counter()
+
+        # create dataframe for solution
+        solution_data = self.create_data_frame(end_time)
+        if not isinstance(solution_data, pd.DataFrame):
             return False
         self.solution_data = solution_data
 
@@ -126,18 +148,18 @@ class Solver(Notifier):
 
         # clean solution data
         new_solution = []
-        for s in solution_data:
-            if s['items']:
+        for index, row in self.solution_data.iterrows():
+            if row['items']:
                 sum_items = 0
-                for i in s['items']:
+                for i in row['items']:
                     sum_items += int(i)
                 maxim = int(self.problem.bin_capacity)
                 if sum_items > maxim:
-                    self.error(f"Container over capacity: {s['items']} with total {sum_items} > {maxim}")
+                    self.error(f"Container over capacity: {row['items']} with total {sum_items} > {maxim}")
                 cap = sum_items / maxim
-                s['Capacity'] = cap
-                s['sum'] = sum_items
-                new_solution.append(s)
+                row['Capacity'] = cap
+                row['sum'] = sum_items
+                new_solution.append(row)
 
         self.crowd_holder.addition(pd.DataFrame(new_solution))
         self.start_time = -1
