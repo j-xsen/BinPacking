@@ -1,6 +1,7 @@
 from direct.directnotify.DirectNotifyGlobal import directNotify
 from direct.gui.DirectButton import DirectButton
 from direct.gui.DirectGuiGlobals import RIDGE
+from pandas import Series
 
 from src.IDNodePath import IDNodePath
 
@@ -46,11 +47,18 @@ class Holder(IDNodePath):
             self.selected = None
 
     def on_item_clicked(self, item):
+        if isinstance(item, Series):
+            if len(self.collection) <= int(item.name):
+                new_container = self.create_new_container()
+            item = self.collection[int(item.name)]
+            if not item:
+                self.notify.warning(f"Clicked Series index {item.name} not found in Holder")
+                return
         if not item:
             self.deselect()
             return
         if not isinstance(item, self.item_type):
-            self.notify.warning(f"Clicked item is not of type {self.item_type.__name__}")
+            self.notify.warning(f"Clicked\n\n{item}\n{type(item)} is not of type {self.item_type.__name__}")
             return
         if not self.selected:
             item.select()

@@ -101,6 +101,9 @@ class Solver(Notifier):
         return True
 
     def solved(self):
+        if len(self.container_holder.collection)==0:
+            self.warning("No solution data recorded yet.")
+            return False
         end_time = time.perf_counter()
 
         # create dataframe for solution
@@ -113,6 +116,9 @@ class Solver(Notifier):
                 'Capacity': container.carrying/container.capacity,
                 'time': end_time - self.start_time
             })
+        if len(solution_data)==0:
+            self.warning("No solution data recorded yet.")
+            return False
         self.solution_data = solution_data
 
         # perform variation on solution
@@ -135,3 +141,7 @@ class Solver(Notifier):
 
         self.crowd_holder.addition(pd.DataFrame(new_solution))
         self.start_time = -1
+
+        # adjust for variations
+        self.crowd_holder.collection[-1].command()
+        return True

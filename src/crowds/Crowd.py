@@ -1,12 +1,17 @@
+from direct.directnotify.Notifier import Notifier
 from direct.gui.DirectButton import DirectButton
 from panda3d.core import NodePath
 from direct.gui import DirectGuiGlobals as DGG
 
 
-class Crowd(NodePath):
+class Crowd(NodePath, Notifier):
     def __init__(self, data):
+        if data.empty:
+            raise ValueError("Cannot create Crowd with empty data")
         super().__init__("Crowd")
-        self.time = data["time"][0]
+        Notifier.__init__(self, "Crowd")
+        self.setDebug(True)
+        self.time = data.get("time", None)[0]
         data.drop("time",axis=1,inplace=True)
         self.data = data
         self.active = True
@@ -21,5 +26,14 @@ class Crowd(NodePath):
             text_scale=0.06,
         )
     def command(self):
-        print(self.data)
-        print(f"in {self.time:.5f}s")
+        self.debug(self.data)
+        self.debug(f"in {self.time:.5f}s")
+        base.dimension.reset()
+        for idx, cur_bin in self.data.iterrows():
+            for cur_item in cur_bin["items"]:
+                messenger.send("container-clicked", [cur_bin])
+                messenger.send("item-clicked", [cur_item])
+        base.dimension.deselect()
+
+
+

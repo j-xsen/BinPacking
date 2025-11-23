@@ -36,9 +36,15 @@ class OneD(NodePath):
         self.solvers = Solvers(self)
 
     def reset(self):
+        self.deselect()
         self.item_holder.reset()
         self.container_holder.reset()
         self.problem_loader.load(prob)
+
+    def deselect(self):
+        self.item_holder.deselect()
+        self.container_holder.deselect()
+        self.crowd_holder.deselect()
 
     def render(self):
         return f"Rendering 1D view with data: {self.data}"

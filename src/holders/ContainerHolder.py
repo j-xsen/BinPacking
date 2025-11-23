@@ -29,7 +29,10 @@ class ContainerHolder(CarouselHolder, DirectObject):
             text_fg=(1,1,1,1),
         )
 
-        self.accept("container-clicked", self.on_item_clicked)
+        self.accept("container-clicked", self.click_container)
+
+    def click_container(self, item):
+        super().on_item_clicked(item)
 
     def reset(self):
         super().reset()

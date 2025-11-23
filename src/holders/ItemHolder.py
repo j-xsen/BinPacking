@@ -21,10 +21,20 @@ class ItemHolder(CarouselHolder, DirectObject):
 
         self.accept("item-clicked", self.on_item_clicked)
 
+    def on_item_clicked(self, item):
+        if type(item) == str:
+            item = self.item_from_weight(int(item))
+        super().on_item_clicked(item)
+
+    def item_from_weight(self, weight):
+        for item in self.collection:
+            if int(item.weight) == (weight):
+                return item
+        return None
+
     def create_new_item(self, weight=1):
         new_item = Item(weight=weight)
         self.addition(new_item)
-        self.notify.debug(f"New Item created: {new_item}")
         return new_item
 
     def create_new_valued_item(self, weight=1, value=1):

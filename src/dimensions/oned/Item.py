@@ -39,6 +39,7 @@ class Item(IDNodePath):
 
     def select(self):
         self.frame["frameColor"] = selected_colors
+        self.show()
 
     def deselect(self):
         self.frame["frameColor"] = unselect_colors

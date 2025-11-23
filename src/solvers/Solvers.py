@@ -1,5 +1,4 @@
 import random
-import copy
 import time
 
 from direct.gui.DirectButton import DirectButton
@@ -7,14 +6,13 @@ from direct.gui.DirectFrame import DirectFrame
 
 from src.solvers.BestFit import BestFit
 from src.solvers.BestFitDecreasing import BestFitDecreasing
-from src.solvers.FirstFitDecreasing import FirstFitDecreasing
-from src.solvers.GreedyValue import GreedyValue
 from src.solvers.FirstFit import FirstFit
+from src.solvers.FirstFitDecreasing import FirstFitDecreasing
 from src.solvers.WorstFit import WorstFit
 
 
 class Solvers:
-    def __init__(self,dimension):
+    def __init__(self, dimension):
         self.frame = DirectFrame(
             frameColor=(0.8, 0.8, 0.8, 1),
             frameSize=(-0.75, 0.75, -0.1, 0.1),
@@ -24,7 +22,7 @@ class Solvers:
             text_pos=(-0.65, 0.06),
         )
 
-        self.dimension=dimension
+        self.dimension = dimension
 
         first_fit = FirstFit(dimension)
         self.first_fit = DirectButton(
@@ -43,16 +41,6 @@ class Solvers:
             pos=(-0.4, 0, -.07),
             command=first_fit_decreasing.solve
         )
-
-        # greedy_value = GreedyValue(item_holder, container_holder, problem)
-        # self.greedy_value = DirectButton(
-        #     parent=self.frame,
-        #     text="Greedy Value",
-        #     scale=0.05,
-        #     pos=(0.4, 0, 0),
-        #     command=greedy_value.solve
-        # )
-        # self.greedy_value.hide()
 
         best_fit = BestFit(dimension)
         self.best_fit = DirectButton(
@@ -81,7 +69,9 @@ class Solvers:
             command=worst_fit.solve
         )
 
-        self.solvers = [first_fit, first_fit_decreasing, best_fit, best_fit_decreasing, worst_fit]
+        self.solvers = [first_fit, first_fit_decreasing,
+                        best_fit, best_fit_decreasing,
+                        worst_fit]
 
         gen_ten = DirectButton(
             parent=self.frame,
@@ -99,5 +89,4 @@ class Solvers:
             new_solver.solve()
             self.dimension.reset()
         end = time.perf_counter()
-        self.dimension.crowd_holder.time = end-start
-
+        self.dimension.crowd_holder.time = end - start
