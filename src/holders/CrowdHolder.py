@@ -14,7 +14,7 @@ class CrowdHolder(CarouselHolder):
     def __init__(self):
         super().__init__(Crowd, (0, 0, 0), 1)
         self._time = 0
-        self.crowd_buttons = CrowdControl()
+        self.crowd_buttons = CrowdControl(self)
 
     @property
     def time(self):

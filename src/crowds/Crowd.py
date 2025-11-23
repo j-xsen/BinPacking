@@ -25,6 +25,8 @@ class Crowd(NodePath, Notifier):
             text=f"{data["Capacity"].mean():.2f}\n#{data.shape[0]}",
             text_scale=0.06,
         )
+    def __str__(self):
+        return f"Crowd ({self.data.shape[0]} bins, time={self.time:.5f}s)"
     def command(self):
         self.debug(self.data)
         self.debug(f"in {self.time:.5f}s")

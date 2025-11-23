@@ -7,6 +7,9 @@ class Problem:
         self.items = items
         self.name = name
 
+    def __len__(self):
+        return len(self.items)
+
     def __str__(self):
         return f"Problem(name={self.name}, bin_capacity={self.bin_capacity}, items={self.items})"
 

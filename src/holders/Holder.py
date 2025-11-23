@@ -35,6 +35,9 @@ class Holder(IDNodePath):
     def __str__(self):
         return f"Holder-{self.uid} ({len(self.collection)} items)"
 
+    def __iter__(self):
+        return iter(self.collection)
+
     def reset(self):
         self.deselect()
         for item in self.collection:
