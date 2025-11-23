@@ -4,6 +4,8 @@ from direct.gui.DirectButton import DirectButton
 from direct.gui.DirectFrame import DirectFrame
 from panda3d.core import NodePath
 
+from src.crowds.Breeder import Breeder
+
 
 class CrowdControl(NodePath, Notifier):
     def __init__(self, crowd_holder):
@@ -20,6 +22,8 @@ class CrowdControl(NodePath, Notifier):
             text_pos=(-.8, 0.06),
             text_fg=(1,1,1, 1),
         )
+
+        breeder = Breeder(self)
 
         create_agreement_matrix_button = DirectButton(
             parent=self.frame,
@@ -42,7 +46,7 @@ class CrowdControl(NodePath, Notifier):
         if not self.verify_start():
             return
         items = list(dict.fromkeys(base.dimension.problem_loader.loaded_problem.items))
-        matrix = numpy.zeros((len(items), len(items)), dtype=int)
+        matrix = numpy.zeros((len(items), len(items)), dtype=float)
         item_to_index = {item: idx for idx, item in enumerate(items)}
         # go through every crowd
         for crowd in self.crowd_holder.collection:
@@ -68,6 +72,9 @@ class CrowdControl(NodePath, Notifier):
                     if item_j in container_i:
                         matrix[item_to_index[item_i], item_to_index[item_j]] += 1
                         matrix[item_to_index[item_j], item_to_index[item_i]] += 1
-
-        print("Agreement Matrix:")
-        print(matrix)
+        # normalize
+        rows, cols = matrix.shape
+        for i in range(rows):
+            for j in range(cols):
+                cur = matrix[i][j]
+                matrix[i][j] = matrix[i][j] / len(items)

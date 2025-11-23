@@ -132,3 +132,9 @@ class Holder(IDNodePath):
         else:
             self.notify.warning(f"{sub} not found in Holder collection")
         self.rearrange()
+
+    def return_random(self):
+        import random
+        if len(self.collection) == 0:
+            return None
+        return random.choice(self.collection)
