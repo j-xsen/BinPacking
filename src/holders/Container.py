@@ -79,6 +79,15 @@ class Container(Holder):
             text_fg=(1, 1, 1, 1),
             )
 
+    def contains(self, other):
+        other_result = False
+        if type(other) == str:
+            for item in self:
+                if int(item.weight) == int(other):
+                    other_result = True
+                    break
+        return other_result
+
     def hide(self):
         self.frame.hide()
 

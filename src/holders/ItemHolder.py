@@ -21,6 +21,17 @@ class ItemHolder(CarouselHolder, DirectObject):
 
         self.accept("item-clicked", self.on_item_clicked)
 
+    def contains(self, other):
+        other_result = False
+        if type(other) == str:
+            other_result = self.item_from_weight(int(other))
+        return other_result
+
+    def get(self, obj):
+        if type(obj) == str:
+            return self.item_from_weight(int(obj))
+        return super().get(obj)
+
     def on_item_clicked(self, item):
         if type(item) == str:
             item = self.item_from_weight(int(item))

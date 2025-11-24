@@ -78,6 +78,12 @@ class Holder(IDNodePath):
             self.selected = item
         messenger.send("holder-updated")
 
+    def contains(self, other):
+        if not isinstance(other,self.item_type):
+            # try to convert
+            self.notify.error(f"Cannot convert {other} to {self.item_type.__name__}")
+        return other in self.collection
+
     def get(self, obj):
         for item in self.collection:
             if item == obj:

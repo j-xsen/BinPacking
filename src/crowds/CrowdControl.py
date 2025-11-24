@@ -27,7 +27,7 @@ class CrowdControl(NodePath, Notifier):
             text_fg=(1,1,1, 1),
         )
 
-        breeder = Breeder(self)
+        self.breeder = Breeder(self)
 
         create_agreement_matrix_button = DirectButton(
             parent=self.frame,
@@ -44,6 +44,8 @@ class CrowdControl(NodePath, Notifier):
         if len(self.crowd_holder.collection) < 2:
             self.debug("At least two crowd members are required to verify agreement.")
             return False
+        if not hasattr(self.breeder,'dimension'):
+            self.breeder.set_dimension(base.dimension)
         return True
 
     def show_agreement_matrix(self, matrix, index_to_item):
@@ -60,6 +62,36 @@ class CrowdControl(NodePath, Notifier):
         plt.xlabel("Items")
         plt.ylabel("Items")
         plt.show()
+
+    def create_data_from_matrix(self, matrix, index_to_item):
+        base.dimension.reset()
+        while len(base.dimension.item_holder)!=0:
+            item = base.dimension.item_holder.collection[0]
+            placed = False
+            for container in base.dimension.container_holder:
+                if container.can_add(item):
+                    # check agreement values
+                    agreement_sum = 0.0
+                    for other_item in container:
+                        idx_i = None
+                        idx_j = None
+                        for idx, it in index_to_item.items():
+                            if it == item:
+                                idx_i = idx
+                            if it == other_item:
+                                idx_j = idx
+                        if idx_i is not None and idx_j is not None:
+                            agreement_sum += matrix[idx_i][idx_j]
+                    messenger.send("container-clicked", [container])
+                    messenger.send("item-clicked", [item])
+                    placed=True
+                    break
+            if not placed:
+                new_container = base.dimension.container_holder.create_new_container()
+                messenger.send("container-clicked", [new_container])
+                messenger.send("item-clicked", [item])
+        self.debug(f"Created new data from agreement matrix with {len(base.dimension.container_holder)} containers.")
+        self.breeder.solved()
 
     def create_agreement_matrix(self):
         if not self.verify_start():
@@ -101,3 +133,4 @@ class CrowdControl(NodePath, Notifier):
                 matrix[i][j] = matrix[i][j] / (len(crowd)*1)
         index_to_item = {idx: item for item, idx in item_to_index.items()}
         self.show_agreement_matrix(matrix,index_to_item)
+        self.create_data_from_matrix(matrix, index_to_item)
