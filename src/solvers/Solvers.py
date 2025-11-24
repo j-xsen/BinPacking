@@ -82,6 +82,10 @@ class Solvers:
             extraArgs=[10]
         )
 
+    def reset(self):
+        for solver in self.solvers:
+            solver.reset()
+
     def generate_x(self, x):
         start = time.perf_counter()
         for _ in range(x):

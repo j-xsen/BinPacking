@@ -7,7 +7,7 @@ from src.solvers.Solvers import Solvers
 from src.holders.ContainerHolder import ContainerHolder
 from src.holders.ItemHolder import ItemHolder
 
-prob = "problem50"
+prob = "problem100"
 
 class OneD(NodePath):
     def __init__(self):

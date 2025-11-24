@@ -6,6 +6,7 @@ from direct.directnotify.Notifier import Notifier
 from direct.gui.DirectButton import DirectButton
 from direct.showbase.DirectObject import DirectObject
 
+from src.crowds.Crowd import Crowd
 from src.solvers.Solver import Solver
 
 
@@ -22,19 +23,52 @@ class Breeder(Solver):
         super().__init__(None, "Breeder")
         Notifier.__init__(self, "Breeder")
         self.setDebug(True)
-        self.btn = DirectButton(
-            text="Breed",
+        btn_breed_ten = DirectButton(
+            text="Breed 10",
             scale=0.07,
             pos=(-.875, 0, -.02),
             command=self.breed_x,
             extraArgs=[10],
             parent=crowd_control.frame,
         )
+        btn_breed_one = DirectButton(
+            text="Breed 1",
+            scale=0.07,
+            pos=(-.875, 0, -.1),
+            command=self.breed_x,
+            extraArgs=[1],
+            parent=crowd_control.frame,
+        )
+
+        btn_gen_one = DirectButton(
+            text="1 Gen",
+            scale=0.07,
+            pos=(.875, 0, -.02),
+            command=self.gen,
+            parent=crowd_control.frame,
+        )
         self.crowd_control = crowd_control
 
-    def breed_x(self, x, parent_pool_percent=0.5):
-        self.set_dimension(base.dimension)
-        crowd_copy = self.crowd_holder.collection.copy()
+    def gen(self):
+        self.debug("Generating new generation")
+        GEN_SIZE = 10
+        if not hasattr(self,"item_holder"):
+            self.set_dimension(base.dimension)
+        mtx = self.crowd_control.create_agreement_matrix()
+        self.solved()
+        self.crowd_holder.new_generation()
+        self.breed_x(GEN_SIZE,last_gen=True)
+        base.dimension.reset()
+
+    def breed_x(self, x, parent_pool_percent=0.5, elite_percent=0.2, last_gen=False):
+        if not hasattr(self,"item_holder"):
+            self.set_dimension(base.dimension)
+        if not last_gen:
+            crowd_copy = self.crowd_holder.collection.copy()
+        else:
+            # crowd_copy = self.crowd_holder.past_generations[-1].copy()
+            crowd_copy = base.dimension.crowd_holder.past_generations[-1].copy()
+            self.debug(f"Breeding from last generation with {len(crowd_copy)} members")
         sorted_crowd = sorted(
             crowd_copy,
             key=lambda c: int(c),
@@ -42,7 +76,8 @@ class Breeder(Solver):
         if len(sorted_crowd) < 2:
             self.warning("Not enough crowd members to breed from!")
             return
-        new_crowds = []
+        base.dimension.reset()
+        # breed x many
         for _ in range(x):
             # pick parents
             parent_one = random.choice(sorted_crowd)
@@ -52,9 +87,6 @@ class Breeder(Solver):
                 if candidate != parent_one:
                     parent_two = candidate
             data = self.breed(parent_one, parent_two)
-            new_crowds.append(data)
-        self.crowd_holder.new_generation()
-        for data in new_crowds:
             self.crowd_holder.addition(data)
 
     def breed(self, parent_one, parent_two):
@@ -141,6 +173,6 @@ class Breeder(Solver):
                          f"Parent two sum: {parent_two.data['sum'].sum()}\n"
                          f"Offspring sum: {new_data['sum'].sum()}")
 
-        base.dimension.deselect()
+        # self.solved()
 
         return new_data

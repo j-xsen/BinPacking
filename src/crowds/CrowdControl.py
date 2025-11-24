@@ -1,3 +1,5 @@
+import random
+
 import numpy
 from direct.directnotify.Notifier import Notifier
 from direct.gui.DirectButton import DirectButton
@@ -36,6 +38,14 @@ class CrowdControl(NodePath, Notifier):
             pos=(0, 0, 0),
             command=self.create_agreement_matrix
         )
+        show_agreement_matrix_button = DirectButton(
+            parent=self.frame,
+            text="Show Agreement Matrix",
+            scale=0.05,
+            pos=(0, 0, -0.07),
+            command=self.create_agreement_matrix,
+            extraArgs=[True]
+        )
 
     def __len__(self):
         return len(self.crowd_holder.collection)
@@ -49,51 +59,52 @@ class CrowdControl(NodePath, Notifier):
         return True
 
     def show_agreement_matrix(self, matrix, index_to_item):
-        sorted_indices = sorted(range(len(index_to_item)), key=lambda i: int(index_to_item[i]))
-        matrix_sorted = matrix[np.ix_(sorted_indices, sorted_indices)]
-        sorted_labels = [index_to_item[i] for i in sorted_indices]
-        annot = np.where(matrix_sorted==0, "", np.round(matrix_sorted, 2).astype(str))
-        hm = sns.heatmap(matrix_sorted, annot=annot, fmt="")
-
-        hm.set_xticklabels(sorted_labels)
-        hm.set_yticklabels(sorted_labels)
+        # Plot
+        hm = sns.heatmap(matrix)
 
         plt.title("Agreement Matrix")
         plt.xlabel("Items")
         plt.ylabel("Items")
         plt.show()
 
-    def create_data_from_matrix(self, matrix, index_to_item):
+    def create_data_from_matrix(self, matrix, index_to_item, item_to_index):
         base.dimension.reset()
         while len(base.dimension.item_holder)!=0:
+            # need to place item
             item = base.dimension.item_holder.collection[0]
             placed = False
+            smallest = None
             for container in base.dimension.container_holder:
+                # find container that can hold item
                 if container.can_add(item):
+                    # can it fit in this container?
                     # check agreement values
-                    agreement_sum = 0.0
+                    max_agree = 0
                     for other_item in container:
-                        idx_i = None
-                        idx_j = None
-                        for idx, it in index_to_item.items():
-                            if it == item:
-                                idx_i = idx
-                            if it == other_item:
-                                idx_j = idx
-                        if idx_i is not None and idx_j is not None:
-                            agreement_sum += matrix[idx_i][idx_j]
-                    messenger.send("container-clicked", [container])
-                    messenger.send("item-clicked", [item])
-                    placed=True
-                    break
+                        if max_agree < matrix[item_to_index[item.weight], item_to_index[other_item.weight]]:
+                            max_agree = matrix[item_to_index[item.weight], item_to_index[other_item.weight]]
+                    # threshold
+                    if max_agree >= 0.40 * len(container):
+                        messenger.send("container-clicked", [container])
+                        messenger.send("item-clicked", [item])
+                        placed=True
+                        break
+                    else:
+                        if max_agree >= 0.01 * len(container):
+                            smallest=container
             if not placed:
-                new_container = base.dimension.container_holder.create_new_container()
-                messenger.send("container-clicked", [new_container])
-                messenger.send("item-clicked", [item])
+                if smallest:
+                    self.debug(f"Placing in least bad container {smallest}")
+                    messenger.send("container-clicked", [smallest])
+                    messenger.send("item-clicked", [item])
+                else:
+                    new_container = base.dimension.container_holder.create_new_container()
+                    messenger.send("container-clicked", [new_container])
+                    messenger.send("item-clicked", [item])
         self.debug(f"Created new data from agreement matrix with {len(base.dimension.container_holder)} containers.")
-        self.breeder.solved()
+        return self.breeder.solution_data
 
-    def create_agreement_matrix(self):
+    def create_agreement_matrix(self,show=False):
         if not self.verify_start():
             return
         items = list(dict.fromkeys(base.dimension.problem_loader.loaded_problem.items))
@@ -118,8 +129,6 @@ class CrowdControl(NodePath, Notifier):
                 # check every other item in the same bin
                 # except vertices
                 for jdx, item_j in enumerate(items):
-                    if item_j == item_i:
-                        continue
                     if item_j in container_i:
                         matrix[item_to_index[item_i], item_to_index[item_j]] += 1
                         matrix[item_to_index[item_j], item_to_index[item_i]] += 1
@@ -128,9 +137,10 @@ class CrowdControl(NodePath, Notifier):
         for i in range(rows):
             for j in range(cols):
                 cur = matrix[i][j]
-                if matrix[i][j] / (len(crowd)*1) > 1:
-                    self.warning(f"Agreement value {cur} for items {items[i]} and {items[j]} exceeds 1 after normalization.")
                 matrix[i][j] = matrix[i][j] / (len(crowd)*1)
         index_to_item = {idx: item for item, idx in item_to_index.items()}
-        self.show_agreement_matrix(matrix,index_to_item)
-        self.create_data_from_matrix(matrix, index_to_item)
+        if show:
+            self.show_agreement_matrix(matrix,index_to_item)
+            return True
+        else:
+            return self.create_data_from_matrix(matrix, index_to_item, item_to_index)

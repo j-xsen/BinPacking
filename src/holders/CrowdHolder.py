@@ -40,9 +40,11 @@ class CrowdHolder(CarouselHolder):
             self.right_button['state'] = DGG.NORMAL
 
     def new_generation(self):
-        prev_collection = self.collection
+        prev_collection = self.collection.copy()
+        self.notify.debug(f"Appending generation with {len(prev_collection)} crowds")
         for i in prev_collection:
             i.hide()
         self.past_generations.append(prev_collection)
+        self.notify.debug(f"Past generations: {self.past_generations[-1]}")
         self.collection.clear()
         self.rearrange()
