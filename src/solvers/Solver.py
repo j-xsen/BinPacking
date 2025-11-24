@@ -44,7 +44,6 @@ class Solver(Notifier):
 
     def retrieve_data(self):
         df = pd.DataFrame(self.solution_data)
-        print(f"Mean: {df['Capacity'].mean()}")
         sns.set_theme()
         sns.barplot(
             data=df,

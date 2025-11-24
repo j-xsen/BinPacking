@@ -58,7 +58,7 @@ class Breeder(Solver):
             self.crowd_holder.addition(data)
 
     def breed(self, parent_one, parent_two):
-        self.debug(f"\n\nBreeding\n{parent_one}\nand\n{parent_two}\n")
+        self.debug(f"Breeding {parent_one} and {parent_two}")
         # reset
         base.dimension.reset()
 

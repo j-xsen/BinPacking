@@ -6,6 +6,10 @@ from panda3d.core import NodePath
 
 from src.crowds.Breeder import Breeder
 
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 class CrowdControl(NodePath, Notifier):
     def __init__(self, crowd_holder):
@@ -42,6 +46,21 @@ class CrowdControl(NodePath, Notifier):
             return False
         return True
 
+    def show_agreement_matrix(self, matrix, index_to_item):
+        sorted_indices = sorted(range(len(index_to_item)), key=lambda i: int(index_to_item[i]))
+        matrix_sorted = matrix[np.ix_(sorted_indices, sorted_indices)]
+        sorted_labels = [index_to_item[i] for i in sorted_indices]
+        annot = np.where(matrix_sorted==0, "", np.round(matrix_sorted, 2).astype(str))
+        hm = sns.heatmap(matrix_sorted, annot=annot, fmt="")
+
+        hm.set_xticklabels(sorted_labels)
+        hm.set_yticklabels(sorted_labels)
+
+        plt.title("Agreement Matrix")
+        plt.xlabel("Items")
+        plt.ylabel("Items")
+        plt.show()
+
     def create_agreement_matrix(self):
         if not self.verify_start():
             return
@@ -77,4 +96,8 @@ class CrowdControl(NodePath, Notifier):
         for i in range(rows):
             for j in range(cols):
                 cur = matrix[i][j]
-                matrix[i][j] = matrix[i][j] / len(items)
+                if matrix[i][j] / (len(crowd)*1) > 1:
+                    self.warning(f"Agreement value {cur} for items {items[i]} and {items[j]} exceeds 1 after normalization.")
+                matrix[i][j] = matrix[i][j] / (len(crowd)*1)
+        index_to_item = {idx: item for item, idx in item_to_index.items()}
+        self.show_agreement_matrix(matrix,index_to_item)
