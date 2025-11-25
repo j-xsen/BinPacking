@@ -53,22 +53,26 @@ class Solver(Notifier):
         )
         plt.show()
 
-    def vary(self):
+    def vary(self, sol=None):
         REMOVE_ITEM_CHANCE = 0.25
         PUT_BACK_CHANCE = 0.5
         END_VARY_CHANCE = 0.1
-        if isinstance(self.solution_data, pd.DataFrame):
-            if self.solution_data.empty:
-                self.warning("Solution data is empty")
-        elif not self.solution_data:
-            self.warning("No solution data to vary.")
+        if sol:
+            use_sol = sol
+        else:
+            use_sol = self.solution_data
+        if isinstance(use_sol, pd.DataFrame):
+            if use_sol.empty:
+                self.error("Solution data is empty")
+        elif not use_sol:
+            self.error(f"No solution data to vary. {use_sol}")
         else:
             done = False
             while not done:
                 removed = None
                 removed_from = None
                 added_to = None
-                for item in self.solution_data:
+                for item in use_sol:
                     if not item['items']:
                         continue
                     if not removed:
@@ -76,6 +80,8 @@ class Solver(Notifier):
                             self.debug(f"Removing from {item['items']}")
                             removed = min(item['items'])
                             item['items'].remove(removed)
+                            item['sum'] -= int(removed)
+                            item['Capacity'] = item['sum'] / int(self.problem.bin_capacity)
                             removed_from = item
                     else:
                         sum_items = 0
@@ -85,6 +91,8 @@ class Solver(Notifier):
                         if sum_items + int(removed) <= maxim:
                             self.debug(f"Adding {removed} to {item}")
                             item['items'].append(removed)
+                            item['sum'] += int(removed)
+                            item['Capacity'] = item['sum'] / int(self.problem.bin_capacity)
                             added_to = item
                             break
                 if removed and not added_to:
@@ -92,14 +100,22 @@ class Solver(Notifier):
                         # put back
                         self.debug(f"Putting back {removed} to {removed_from}")
                         removed_from['items'].append(removed)
+                        removed_from['sum'] += int(removed)
+                        removed_from['Capacity'] = removed_from['sum'] / int(self.problem.bin_capacity)
                     else:
                         # make new container
                         self.debug(f"Creating new container for {removed}")
-                        self.solution_data.append({
+                        use_sol.append({
                             'items': [removed],
+                            'sum': int(removed),
                             'Capacity': int(removed)/int(self.problem.bin_capacity),})
                 if random.random() < END_VARY_CHANCE:
                     done = True
+            for s in use_sol:
+                if len(s['items']) == 0:
+                    self.debug(f"Removing empty container {s} from solution")
+                    use_sol.remove(s)
+            self.solution_data = use_sol
 
 
     def solve(self):

@@ -2,6 +2,7 @@ import time
 from enum import Enum
 import random
 
+import pandas as pd
 from direct.directnotify.Notifier import Notifier
 from direct.gui.DirectButton import DirectButton
 from direct.showbase.DirectObject import DirectObject
@@ -164,8 +165,24 @@ class Breeder(Solver):
                             break
             items = [i for i in items if i != item]
 
+        # mutation
+        if mutation_type == MutationTypes.SCRAMBLE:
+            self.debug("Applying scramble mutation")
+            self.debug(f"{self.solution_data}")
+            endtime=time.perf_counter()
+            items = self.create_data_frame(endtime)
+            self.vary()
+            for idc,cont in enumerate(self.solution_data):
+                if len(cont['items']) == 0:
+                    self.debug(f"Removing empty container {idc}")
+                    self.solution_data.pop(idc)
+            self.debug(f"{self.solution_data}")
+        else:
+            self.warning(f"Mutation type {mutation_type} not implemented")
+
         end_time = time.perf_counter()
-        new_data = self.create_data_frame(end_time)
+        new_data = pd.DataFrame(self.solution_data)
+        self.debug(f"new_data: {new_data}")
         if new_data['sum'].sum() != parent_one.data['sum'].sum() and \
                 new_data['sum'].sum() != parent_two.data['sum'].sum():
             self.error(f"Breeding resulted in invalid total sum of items!\n"

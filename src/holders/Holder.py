@@ -55,7 +55,7 @@ class Holder(IDNodePath):
 
     def on_item_clicked(self, item):
         if isinstance(item, Series):
-            if len(self.collection) <= int(item.name):
+            while len(self.collection) <= int(item.name):
                 new_container = self.create_new_container()
             item = self.collection[int(item.name)]
             if not item:
