@@ -73,13 +73,13 @@ class Solvers:
                         best_fit, best_fit_decreasing,
                         worst_fit]
 
-        gen_ten = DirectButton(
+        gen_twenty_five = DirectButton(
             parent=self.frame,
-            text="Run 10 times",
+            text="Run 25 times",
             scale=0.05,
             pos=(0, 0, .1),
             command=self.generate_x,
-            extraArgs=[10]
+            extraArgs=[25]
         )
 
     def reset(self):

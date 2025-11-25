@@ -25,11 +25,11 @@ class Breeder(Solver):
         Notifier.__init__(self, "Breeder")
         self.setDebug(True)
         btn_breed_ten = DirectButton(
-            text="Breed 10",
+            text="Breed 50",
             scale=0.07,
             pos=(-.875, 0, -.02),
             command=self.breed_x,
-            extraArgs=[10],
+            extraArgs=[50],
             parent=crowd_control.frame,
         )
         btn_breed_one = DirectButton(
@@ -41,24 +41,41 @@ class Breeder(Solver):
             parent=crowd_control.frame,
         )
 
-        btn_gen_one = DirectButton(
-            text="1 Gen",
+        btn_gen_fifty = DirectButton(
+            text="25 Gen",
             scale=0.07,
             pos=(.875, 0, -.02),
-            command=self.gen,
+            command=self.gen_x,
+            extraArgs=[25],
+            parent=crowd_control.frame,
+        )
+        btn_gen_five = DirectButton(
+            text="5 Gen",
+            scale=0.07,
+            pos=(.875, 0, -.12),
+            command=self.gen_x,
+            extraArgs=[5],
             parent=crowd_control.frame,
         )
         self.crowd_control = crowd_control
 
+    def gen_x(self, x):
+        self.debug(f"Generating {x} generations")
+        for _ in range(x):
+            self.gen()
+
     def gen(self):
         self.debug("Generating new generation")
-        GEN_SIZE = 10
+        GEN_SIZE = 50
         if not hasattr(self,"item_holder"):
             self.set_dimension(base.dimension)
+        if len(self.crowd_holder.collection) < 2:
+            self.breed_x(GEN_SIZE)
         mtx = self.crowd_control.create_agreement_matrix()
         self.solved()
         self.crowd_holder.new_generation()
         self.breed_x(GEN_SIZE,last_gen=True)
+
         base.dimension.reset()
 
     def breed_x(self, x, parent_pool_percent=0.5, elite_percent=0.2, last_gen=False):
@@ -166,23 +183,20 @@ class Breeder(Solver):
             items = [i for i in items if i != item]
 
         # mutation
-        if mutation_type == MutationTypes.SCRAMBLE:
-            self.debug("Applying scramble mutation")
-            self.debug(f"{self.solution_data}")
-            endtime=time.perf_counter()
-            items = self.create_data_frame(endtime)
-            self.vary()
-            for idc,cont in enumerate(self.solution_data):
-                if len(cont['items']) == 0:
-                    self.debug(f"Removing empty container {idc}")
-                    self.solution_data.pop(idc)
-            self.debug(f"{self.solution_data}")
-        else:
-            self.warning(f"Mutation type {mutation_type} not implemented")
+        if random.random() < 0.3: # MUTATION_CHANCE
+            if mutation_type == MutationTypes.SCRAMBLE:
+                self.debug("Applying scramble mutation")
+                endtime=time.perf_counter()
+                items = self.create_data_frame(endtime)
+                self.vary()
+                for idc,cont in enumerate(self.solution_data):
+                    if len(cont['items']) == 0:
+                        self.solution_data.pop(idc)
+            else:
+                self.warning(f"Mutation type {mutation_type} not implemented")
 
         end_time = time.perf_counter()
         new_data = pd.DataFrame(self.solution_data)
-        self.debug(f"new_data: {new_data}")
         if new_data['sum'].sum() != parent_one.data['sum'].sum() and \
                 new_data['sum'].sum() != parent_two.data['sum'].sum():
             self.error(f"Breeding resulted in invalid total sum of items!\n"

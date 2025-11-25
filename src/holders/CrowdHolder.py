@@ -1,5 +1,6 @@
 from direct.gui.DirectButton import DirectButton
 from direct.gui.DirectFrame import DirectFrame
+from direct.gui.DirectLabel import DirectLabel
 from panda3d.core import NodePath
 from pandas import DataFrame
 
@@ -17,12 +18,56 @@ class CrowdHolder(CarouselHolder):
         self.crowd_buttons = CrowdControl(self)
         self.past_generations = []
 
+        self.avg_containers_per_crowd_label = DirectLabel(
+            parent=self.frame,
+            text="Avg Containers/Solution: 0",
+            scale=0.05,
+            text_fg=(1, 1, 1, 1),
+            frameColor=(0, 0, 0, 0),
+            pos=(-.8, 0, 0.12),
+        )
+        self.solution_number_label = DirectLabel(
+            parent=self.frame,
+            text="Solutions#: 0",
+            scale=0.05,
+            text_fg=(1, 1, 1, 1),
+            frameColor=(0, 0, 0, 0),
+            pos=(.5, 0, 0.12),
+        )
+        self._gen_count = 0
+        self.gen_count_label = DirectLabel(
+            parent=self.frame,
+            text="Generation 0",
+            scale=0.05,
+            text_fg=(1, 1, 1, 1),
+            frameColor=(0, 0, 0, 0),
+            pos=(1, 0, 0.12),
+        )
+        self.show_generated_graph_btn = DirectButton(
+            parent=self.frame,
+            text="Show Generation Graph",
+            scale=0.05,
+            pos=(0, 0, 0.12),
+            command=self.show_generation_graph,
+        )
+
     @property
     def time(self):
         return self._time
     @time.setter
     def time(self, value):
         self._time = value
+
+    def rearrange(self):
+        super().rearrange()
+        if len(self.collection) > 0:
+            total_containers = sum(len(crowd) for crowd in self.collection)
+            avg = total_containers / len(self.collection)
+        else:
+            avg = 0
+        self.avg_containers_per_crowd_label['text'] = f"Avg Containers/Crowd: {avg:.2f}"
+        self.solution_number_label['text'] = f"Solutions#: {len(self.collection)}"
+        self.gen_count_label['text'] = f"Generation {len(self.past_generations)}"
 
     def addition(self, add):
         if isinstance(add, DataFrame):
@@ -48,3 +93,24 @@ class CrowdHolder(CarouselHolder):
         self.notify.debug(f"Past generations: {self.past_generations[-1]}")
         self.collection.clear()
         self.rearrange()
+
+    def show_generation_graph(self):
+        import matplotlib.pyplot as plt
+
+        generations = list(range(len(self.past_generations)))
+        avg_containers = []
+        for generation in self.past_generations:
+            if len(generation) > 0:
+                total_containers = sum(len(crowd) for crowd in generation)
+                avg = total_containers / len(generation)
+            else:
+                avg = 0
+            avg_containers.append(avg)
+
+        plt.plot(generations, avg_containers, marker='o')
+        plt.title('Average Containers per Crowd over Generations')
+        plt.xlabel('Generation')
+        plt.ylabel('Average Containers per Crowd')
+        plt.xticks(generations)
+        plt.grid()
+        plt.show()

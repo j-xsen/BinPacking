@@ -62,6 +62,10 @@ class CrowdControl(NodePath, Notifier):
         # Plot
         hm = sns.heatmap(matrix)
 
+        labels = [index_to_item[i] for i in range(matrix.shape[0])]
+        hm.set_xticklabels(labels, rotation=45, ha='right')
+        hm.set_yticklabels(labels, rotation=0)
+
         plt.title("Agreement Matrix")
         plt.xlabel("Items")
         plt.ylabel("Items")
@@ -121,14 +125,16 @@ class CrowdControl(NodePath, Notifier):
                     if item_i in container:
                         # container
                         container_i = container
-                        break
+                        continue
                 # item not found
                 if container_i is None:
                     continue
                 # item is found
                 # check every other item in the same bin
-                # except vertices
+                # except diagonal
                 for jdx, item_j in enumerate(items):
+                    if item_i == item_j:
+                        continue
                     if item_j in container_i:
                         matrix[item_to_index[item_i], item_to_index[item_j]] += 1
                         matrix[item_to_index[item_j], item_to_index[item_i]] += 1

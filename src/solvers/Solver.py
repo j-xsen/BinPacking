@@ -56,7 +56,7 @@ class Solver(Notifier):
     def vary(self, sol=None):
         REMOVE_ITEM_CHANCE = 0.25
         PUT_BACK_CHANCE = 0.5
-        END_VARY_CHANCE = 0.1
+        END_VARY_CHANCE = 0.6
         if sol:
             use_sol = sol
         else:
